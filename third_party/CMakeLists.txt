@@ -1,0 +1,139 @@
+macro(TURN_OFF option)
+    set(${option} OFF CACHE INTERNAL "" FORCE)
+endmacro()
+
+include(FetchContent)
+
+
+# ------------------------------------------------------------------------------
+# BGFX
+# ------------------------------------------------------------------------------
+
+FetchContent_Declare(
+    bgfx
+    GIT_REPOSITORY https://github.com/bkaradzic/bgfx.git
+    GIT_TAG        e87f08b1e50af8ad416e34fe7365aa5fb6fe5e37
+)
+
+FetchContent_Populate(bgfx)
+
+include(cmake/bgfx.cmake)
+
+
+# ------------------------------------------------------------------------------
+# BIMG
+# ------------------------------------------------------------------------------
+
+FetchContent_Declare(
+    bimg
+    GIT_REPOSITORY https://github.com/bkaradzic/bimg.git
+    GIT_TAG        0de8816a8b155fe85583aa74f5bc93bdfb8910bb
+)
+
+FetchContent_Populate(bimg)
+
+include(cmake/bimg.cmake)
+
+
+# ------------------------------------------------------------------------------
+# BX
+# ------------------------------------------------------------------------------
+
+FetchContent_Declare(
+    bx
+    GIT_REPOSITORY https://github.com/bkaradzic/bx.git
+    GIT_TAG        32a946990745fa1a0ee5df67ad40a6d980f5b1ab
+)
+
+FetchContent_Populate(bx)
+
+include(cmake/bx.cmake)
+
+
+# ------------------------------------------------------------------------------
+# GLFW
+# ------------------------------------------------------------------------------
+
+TURN_OFF(GLFW_BUILD_DOCS)
+TURN_OFF(GLFW_BUILD_EXAMPLES)
+TURN_OFF(GLFW_BUILD_TESTS)
+TURN_OFF(GLFW_DOCUMENT_INTERNALS)
+TURN_OFF(GLFW_INSTALL)
+
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG        dd8a678a66f1967372e5a5e3deac41ebf65ee127
+)
+
+FetchContent_MakeAvailable(
+    glfw
+)
+
+
+# ------------------------------------------------------------------------------
+# Dear ImGui
+# ------------------------------------------------------------------------------
+
+if(WITH_IMGUI)
+    FetchContent_Declare(
+        gleq
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG        69beaa1d0b7fc8f4b448dcf1780b08cfc959da65 # docking branch
+    )
+
+    FetchContent_Populate(imgui)
+
+    include(cmake/imgui.cmake)
+endif()
+
+
+# ------------------------------------------------------------------------------
+# GLEQ
+# ------------------------------------------------------------------------------
+
+if(WITH_GLEQ)
+    FetchContent_Declare(
+        gleq
+        GIT_REPOSITORY https://github.com/bkaradzic/bx.git
+        GIT_TAG        4dd5070341fa17856d06a38f948a100df2fc34cd
+    )
+
+    FetchContent_Populate(gleq)
+
+    include(cmake/gleq.cmake)
+endif()
+
+
+# ------------------------------------------------------------------------------
+# MESHOPTIMIZER
+# ------------------------------------------------------------------------------
+
+if(WITH_MESHOPT)
+    FetchContent_Declare(
+        meshoptimizer
+        GIT_REPOSITORY https://github.com/zeux/meshoptimizer.git
+        GIT_TAG        c4cfc3581f37ae70fa274bef37584a588ae266ab
+    )
+
+    FetchContent_Populate(meshoptimizer)
+
+    include(cmake/meshoptimizer.cmake)
+endif()
+
+
+# ------------------------------------------------------------------------------
+# STB
+# ------------------------------------------------------------------------------
+
+if(WITH_STB)
+    FetchContent_Declare(
+        stb
+        GIT_REPOSITORY https://github.com/nothings/stb.git
+        GIT_TAG        8b5f1f37b5b75829fc72d38e7b5d4bcbf8a26d55
+    )
+
+    FetchContent_Populate(meshoptimizer)
+
+    include(cmake/meshoptimizer.cmake)
+endif()
