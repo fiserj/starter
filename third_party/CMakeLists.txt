@@ -51,6 +51,23 @@ include(cmake/bx.cmake)
 
 
 # ------------------------------------------------------------------------------
+# FMT
+# ------------------------------------------------------------------------------
+
+TURN_OFF(FMT_MASTER_PROJECT)
+
+if(WITH_FMT)
+    FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG        80f8d34427d40ec5e7ce3b10ededc46bd4bd5759
+    )
+
+    FetchContent_MakeAvailable(fmt)
+endif()
+
+
+# ------------------------------------------------------------------------------
 # GLFW
 # ------------------------------------------------------------------------------
 
@@ -66,9 +83,7 @@ FetchContent_Declare(
     GIT_TAG        dd8a678a66f1967372e5a5e3deac41ebf65ee127
 )
 
-FetchContent_MakeAvailable(
-    glfw
-)
+FetchContent_MakeAvailable(glfw)
 
 
 # ------------------------------------------------------------------------------

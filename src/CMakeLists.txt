@@ -15,6 +15,10 @@ set(LIBRARY_LIST
     glfw
 )
 
+if(WITH_FMT)
+    list(APPEND LIBRARY_LIST fmt)
+endif()
+
 if(WITH_GLEQ)
     list(APPEND LIBRARY_LIST gleq)
 endif()
