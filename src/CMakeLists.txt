@@ -9,6 +9,26 @@ target_link_libraries(${NAME} PRIVATE
     glfw
 )
 
+if(WITH_GLEQ)
+    list(APPEND LIBRARY_LIST gleq)
+endif()
+
+if(WITH_IMGUI)
+    list(APPEND LIBRARY_LIST imgui)
+endif()
+
+if(WITH_MESHOPT)
+    list(APPEND LIBRARY_LIST meshoptimizer)
+endif()
+
+if(WITH_STB)
+    list(APPEND LIBRARY_LIST stb)
+endif()
+
+target_link_libraries(${NAME} PRIVATE
+    ${LIBRARY_LIST}
+)
+
 if(MSVC)
     target_compile_definitions(${NAME} PRIVATE
         _CRT_SECURE_NO_WARNINGS
