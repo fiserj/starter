@@ -1,10 +1,16 @@
 set(NAME ${CMAKE_PROJECT_NAME})
 
+if(APPLE)
+    set(EXT mm)
+else()
+    set(EXT cpp)
+endif()
+
 add_executable(${NAME}
-    main.cpp
+    "main.${EXT}"
 )
 
-target_link_libraries(${NAME} PRIVATE
+set(LIBRARY_LIST
     bgfx
     glfw
 )
