@@ -95,7 +95,7 @@ endif()
 if(WITH_GLEQ)
     FetchContent_Declare(
         gleq
-        GIT_REPOSITORY https://github.com/bkaradzic/bx.git
+        GIT_REPOSITORY https://github.com/glfw/gleq.git
         GIT_TAG        4dd5070341fa17856d06a38f948a100df2fc34cd
     )
 
@@ -133,7 +133,7 @@ if(WITH_STB)
         GIT_TAG        8b5f1f37b5b75829fc72d38e7b5d4bcbf8a26d55
     )
 
-    FetchContent_Populate(meshoptimizer)
+    FetchContent_Populate(stb)
 
-    include(cmake/meshoptimizer.cmake)
+    include(cmake/stb.cmake)
 endif()
