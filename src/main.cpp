@@ -2,6 +2,7 @@
 
 #include <bgfx/bgfx.h>                 // bgfx::*
 
+#include <bx/bx.h>                     // BX_CONCATENATE
 #include <bx/platform.h>               // BX_PLATFORM_*
 
 #define GLFW_INCLUDE_NONE
@@ -18,6 +19,35 @@
 #   define GLFW_EXPOSE_NATIVE_WGL
 #endif
 #include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
+
+template <typename Func>
+struct Deferred
+{
+    Func func;
+
+    Deferred(const Deferred&) = delete;
+
+    Deferred& operator=(const Deferred&) = delete;
+
+    Deferred(Func&& func)
+        : func(static_cast<Func&&>(func))
+    {
+    }
+
+    ~Deferred()
+    {
+        func();
+    }
+};
+
+template <typename Func>
+Deferred<Func> make_deferred(Func&& func)
+{
+    return ::Deferred<Func>(static_cast<decltype(func)>(func));
+}
+
+#define defer(...) auto BX_CONCATENATE(deferred_ , __LINE__) = \
+    ::make_deferred([&]() mutable { __VA_ARGS__; })
 
 #if BX_PLATFORM_OSX
 #   import <Cocoa/Cocoa.h>             // NSWindow
@@ -64,7 +94,54 @@ static CAMetalLayer* create_metal_layer(NSWindow* window)
     return init;
 }
 
-int main(int, char**)
+static int run(int, char**)
 {
+    if (glfwInit() != GLFW_TRUE)
+    {
+        return 1;
+    }
+
+    defer(glfwTerminate());
+
+    glfwDefaultWindowHints();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE); // NOTE : Ignored when `glfwSetWindowSize` called.
+
+    GLFWwindow* window = glfwCreateWindow(1024, 768, "StarterTemplate", nullptr, nullptr);
+    if (window == nullptr)
+    {
+        return 2;
+    }
+
+    defer(glfwDestroyWindow(window));
+
+    if (!bgfx::init(create_bgfx_init(window)))
+    {
+        return 3;
+    }
+
+    defer(bgfx::shutdown());
+
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwPollEvents();
+
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        {
+            break;
+        }
+
+        bgfx::touch(0);
+
+        // ...
+
+        bgfx::frame();
+    }
+
     return 0;
+}
+
+int main(int argc, char** argv)
+{
+    return run(argc, argv);
 }
