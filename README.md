@@ -10,7 +10,7 @@
 
 ### Optional
 * [Dear ImGui](https://github.com/ocornut/imgui/tree/69beaa1d0b7fc8f4b448dcf1780b08cfc959da65)
-* [GLEW](https://github.com/glfw/gleq/tree/4dd5070341fa17856d06a38f948a100df2fc34cd)
+* [GLEQ](https://github.com/glfw/gleq/tree/4dd5070341fa17856d06a38f948a100df2fc34cd)
 * [meshoptimizer](https://github.com/zeux/meshoptimizer/tree/c4cfc3581f37ae70fa274bef37584a588ae266ab)
 * [stb](https://github.com/nothings/stb/commit/8b5f1f37b5b75829fc72d38e7b5d4bcbf8a26d55)
 
