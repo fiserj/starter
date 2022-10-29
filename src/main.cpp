@@ -210,9 +210,8 @@ static int run(int, char**)
                 width  = current_width;
                 height = current_height;
 
+                bgfx::reset(uint32_t(width), uint32_t(height), BGFX_RESET_VSYNC);
             }
-
-            bgfx::reset(uint32_t(width), uint32_t(height), BGFX_RESET_VSYNC);
         }
 
         // Set projection transform for the view.
