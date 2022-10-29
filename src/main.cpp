@@ -166,6 +166,9 @@ static int run(int, char**)
 
     bgfx::setViewClear(0 , BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -176,9 +179,20 @@ static int run(int, char**)
         }
 
         {
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
+            int current_width, current_height;
+            glfwGetFramebufferSize(window, &current_width, &current_height);
 
+            if (current_width != width || current_height != height)
+            {
+                width  = current_width;
+                height = current_height;
+
+            }
+
+            bgfx::reset(uint32_t(width), uint32_t(height), BGFX_RESET_VSYNC);
+        }
+
+        {
             bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
 
             const float aspect = float(width) / float(height);
