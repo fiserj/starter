@@ -4,6 +4,7 @@
 #include <bgfx/embedded_shader.h>      // BGFX_EMBEDDED_SHADER
 
 #include <bx/bx.h>                     // BX_CONCATENATE
+#include <bx/math.h>                   // mtxOrtho
 #include <bx/platform.h>               // BX_PLATFORM_*
 
 #define GLFW_INCLUDE_NONE
@@ -77,6 +78,7 @@ static CAMetalLayer* create_metal_layer(NSWindow* window)
     bgfx::Init init;
     init.resolution.width  = uint32_t(width );
     init.resolution.height = uint32_t(height);
+    init.resolution.reset  = BGFX_RESET_VSYNC;
 
 #if BX_PLATFORM_LINUX
     init.type              = bgfx::RendererType::Vulkan;
@@ -126,6 +128,44 @@ static int run(int, char**)
 
     defer(bgfx::shutdown());
 
+    bgfx::setDebug(BGFX_DEBUG_STATS);
+
+    const bgfx::EmbeddedShader shaders[] =
+    {
+        BGFX_EMBEDDED_SHADER(position_color_fs),
+        BGFX_EMBEDDED_SHADER(position_color_vs),
+
+        BGFX_EMBEDDED_SHADER_END()
+    };
+
+    const bgfx::ProgramHandle program = bgfx::createProgram(
+        bgfx::createEmbeddedShader(shaders, bgfx::getRendererType(), "position_color_vs"),
+        bgfx::createEmbeddedShader(shaders, bgfx::getRendererType(), "position_color_fs"),
+        true
+    );
+    defer(bgfx::destroy(program));
+
+    bgfx::VertexLayout vertex_layout;
+    vertex_layout
+        .begin()
+        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::Color0,   4, bgfx::AttribType::Float)
+        .end();
+
+    const float vertices[] =
+    {
+        -0.6f, -0.4f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+         0.6f, -0.4f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
+         0.0f,  0.6f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f,
+    };
+    const bgfx::VertexBufferHandle vertex_buffer = bgfx::createVertexBuffer(
+        bgfx::makeRef(vertices, sizeof(vertices)),
+        vertex_layout
+    );
+    defer(bgfx::destroy(vertex_buffer));
+
+    bgfx::setViewClear(0 , BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -135,9 +175,31 @@ static int run(int, char**)
             break;
         }
 
-        bgfx::touch(0);
+        {
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
 
-        // ...
+            bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
+
+            const float aspect = float(width) / float(height);
+            float proj[16];
+            bx::mtxOrtho(proj, -aspect, aspect, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, bgfx::getCaps()->homogeneousDepth);
+
+            bgfx::setViewTransform(0, nullptr, proj);
+
+            bgfx::touch(0);
+        }
+
+        {
+            float transform[16];
+            bx::mtxRotateZ(transform, float(glfwGetTime()));
+
+            bgfx::setTransform(transform);
+            bgfx::setVertexBuffer(0, vertex_buffer);
+            bgfx::setState(BGFX_STATE_DEFAULT);
+
+            bgfx::submit(0, program);
+        }
 
         bgfx::frame();
     }
