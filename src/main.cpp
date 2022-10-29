@@ -4,7 +4,7 @@
 #include <bgfx/embedded_shader.h>      // BGFX_EMBEDDED_SHADER
 
 #include <bx/bx.h>                     // BX_CONCATENATE
-#include <bx/math.h>                   // mtxOrtho
+#include <bx/math.h>                   // mtxOrtho, mtxRotateZ
 #include <bx/platform.h>               // BX_PLATFORM_*
 
 #define GLFW_INCLUDE_NONE
@@ -22,8 +22,18 @@
 #endif
 #include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
 
+#if BX_PLATFORM_OSX
+#   import <Cocoa/Cocoa.h>             // NSWindow
+#   import <QuartzCore/CAMetalLayer.h> // CAMetalLayer
+#endif
+
 #include <shaders/position_color_fs.h> // position_color_fs_*
 #include <shaders/position_color_vs.h> // position_color_vs_
+
+
+// -----------------------------------------------------------------------------
+// DEFERRED EXECUTION HELPER
+// -----------------------------------------------------------------------------
 
 template <typename Func>
 struct Deferred
@@ -54,9 +64,12 @@ Deferred<Func> make_deferred(Func&& func)
 #define defer(...) auto BX_CONCATENATE(deferred_ , __LINE__) = \
     ::make_deferred([&]() mutable { __VA_ARGS__; })
 
+
+// -----------------------------------------------------------------------------
+// BGFX PLATFORM-SPECIFIC SETUP
+// -----------------------------------------------------------------------------
+
 #if BX_PLATFORM_OSX
-#   import <Cocoa/Cocoa.h>             // NSWindow
-#   import <QuartzCore/CAMetalLayer.h> // CAMetalLayer
 
 static CAMetalLayer* create_metal_layer(NSWindow* window)
 {
@@ -100,8 +113,13 @@ static CAMetalLayer* create_metal_layer(NSWindow* window)
     return init;
 }
 
+// -----------------------------------------------------------------------------
+// MAIN APPLICATION RUNTIME
+// -----------------------------------------------------------------------------
+
 static int run(int, char**)
 {
+    // Window creation ---------------------------------------------------------
     if (glfwInit() != GLFW_TRUE)
     {
         return 1;
@@ -121,6 +139,10 @@ static int run(int, char**)
 
     defer(glfwDestroyWindow(window));
 
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    // BGFX setup --------------------------------------------------------------
     if (!bgfx::init(create_bgfx_init(window)))
     {
         return 3;
@@ -130,6 +152,7 @@ static int run(int, char**)
 
     bgfx::setDebug(BGFX_DEBUG_STATS);
 
+    // Graphics resources' creation --------------------------------------------
     const bgfx::EmbeddedShader shaders[] =
     {
         BGFX_EMBEDDED_SHADER(position_color_fs),
@@ -166,11 +189,10 @@ static int run(int, char**)
 
     bgfx::setViewClear(0 , BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-
+    // Program loop ------------------------------------------------------------
     while (!glfwWindowShouldClose(window))
     {
+        // Update of inputs.
         glfwPollEvents();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -178,6 +200,7 @@ static int run(int, char**)
             break;
         }
 
+        // Reset the backbuffer if window size changed.
         {
             int current_width, current_height;
             glfwGetFramebufferSize(window, &current_width, &current_height);
@@ -192,6 +215,7 @@ static int run(int, char**)
             bgfx::reset(uint32_t(width), uint32_t(height), BGFX_RESET_VSYNC);
         }
 
+        // Set projection transform for the view.
         {
             bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
 
@@ -204,17 +228,19 @@ static int run(int, char**)
             bgfx::touch(0);
         }
 
+        // Submit the triangle data.
         {
             float transform[16];
             bx::mtxRotateZ(transform, float(glfwGetTime()));
 
             bgfx::setTransform(transform);
-            bgfx::setVertexBuffer(0, vertex_buffer);
+            bgfx::setVertexBuffer(0, vertex_buffer); // NOTE : No index buffer.
             bgfx::setState(BGFX_STATE_DEFAULT);
 
             bgfx::submit(0, program);
         }
 
+        // Submit recorded rendering operations.
         bgfx::frame();
     }
 
