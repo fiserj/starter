@@ -1,6 +1,7 @@
 #include <stdint.h>                    // *int*_t
 
 #include <bgfx/bgfx.h>                 // bgfx::*
+#include <bgfx/embedded_shader.h>      // BGFX_EMBEDDED_SHADER
 
 #include <bx/bx.h>                     // BX_CONCATENATE
 #include <bx/platform.h>               // BX_PLATFORM_*
@@ -19,6 +20,9 @@
 #   define GLFW_EXPOSE_NATIVE_WGL
 #endif
 #include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
+
+#include <shaders/position_color_fs.h> // position_color_fs_*
+#include <shaders/position_color_vs.h> // position_color_vs_
 
 template <typename Func>
 struct Deferred
