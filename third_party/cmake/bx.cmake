@@ -15,9 +15,6 @@ target_compile_definitions(bx PUBLIC
     __STDC_CONSTANT_MACROS
     __STDC_FORMAT_MACROS
     __STDC_LIMIT_MACROS
-)
-
-target_compile_definitions(bx PUBLIC
     "BX_CONFIG_DEBUG=$<CONFIG:Debug>"
 )
 

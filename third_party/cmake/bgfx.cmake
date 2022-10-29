@@ -28,14 +28,20 @@ if(APPLE)
     target_compile_definitions(bgfx PRIVATE
         BGFX_CONFIG_RENDERER_METAL
     )
+elseif(UNIX)
+    # TODO : Check linking issues.
+
+    target_compile_definitions(bgfx PRIVATE
+        BGFX_CONFIG_RENDERER_VULKAN
+    )
 elseif(WIN32)
     target_include_directories(bgfx PRIVATE
             ${BGFX_DIR}/3rdparty
-            ${BGFX_DIR}/3rdparty/dxsdk/include
+            ${BGFX_DIR}/3rdparty/directx-headers/include
     )
 
     target_compile_definitions(bgfx PRIVATE
-        BGFX_CONFIG_RENDERER_DIRECT3D11
+        BGFX_CONFIG_RENDERER_DIRECT3D12
     )
 endif()
 
