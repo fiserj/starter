@@ -18,6 +18,7 @@ FetchContent_Declare(
 FetchContent_Populate(bgfx)
 
 include(cmake/bgfx.cmake)
+include(cmake/shaderc.cmake)
 
 
 # ------------------------------------------------------------------------------

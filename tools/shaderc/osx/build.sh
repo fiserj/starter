@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ -f "shaderc" ]; then
+    echo "Found compiled shaderc tool, skipping compilation."
+    exit 0
+fi
+
+echo "Stargting shaderc tool compilation. This might take a while."
+
 mkdir tmp
 pushd tmp
 

@@ -63,3 +63,5 @@ set_target_properties(bgfx PROPERTIES
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
 )
+
+add_dependencies(bgfx shaderc)
