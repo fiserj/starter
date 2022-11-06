@@ -1,6 +1,8 @@
 #include "imgui_impl_bgfx.h"
 
+#include <math.h>                 // fmaxf
 #include <stdint.h>               // uint*_t
+#include <string.h>               // memcpy
 
 #include <bgfx/bgfx.h>            // bgfx::*
 #include <bgfx/embedded_shader.h> // BGFX_EMBEDDED_SHADER
@@ -75,7 +77,81 @@ void ImGui_ImplBgfx_NewFrame()
 
 void ImGui_ImplBgfx_RenderDrawData(ImDrawData* draw_data)
 {
-    // ...
+    const ImGuiIO& io = ImGui::GetIO();
+    const float width  = io.DisplaySize.x * io.DisplayFramebufferScale.x;
+    const float height = io.DisplaySize.y * io.DisplayFramebufferScale.y;
+
+    const ImGui_ImplBgfx_Data* bd = ImGui_ImplBgfx_GetBackendData();
+    bgfx::setViewName(bd->view_id, "ImGui");
+    bgfx::setViewMode(bd->view_id, bgfx::ViewMode::Sequential);
+
+    {
+        const float L = draw_data->DisplayPos.x;
+        const float R = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
+        const float T = draw_data->DisplayPos.y;
+        const float B = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
+
+        const float ortho[4][4] =
+        {
+            { 2.0f / (R - L)   , 0.0f             ,  0.0f, 0.0f },
+            { 0.0f             , 2.0f / (T - B)   ,  0.0f, 0.0f },
+            { 0.0f             , 0.0f             , -1.0f, 0.0f },
+            { (R + L) / (L - R), (T + B) / (B - T),  0.0f, 1.0f },
+        };
+
+        bgfx::setViewRect     (bd->view_id, 0, 0, uint16_t(width), uint16_t(height));
+        bgfx::setViewTransform(bd->view_id, nullptr, ortho);
+    }
+
+    for (int i = 0; i < draw_data->CmdListsCount; i++)
+    {
+        const ImDrawList* draw_list = draw_data->CmdLists[i];
+
+        bgfx::TransientVertexBuffer vertices;
+        bgfx::TransientIndexBuffer  indices;
+        if (!bgfx::allocTransientBuffers(
+            &vertices,
+            bd->layout,
+            uint32_t(draw_list->VtxBuffer.size()),
+            &indices,
+            uint32_t(draw_list->IdxBuffer.size())
+        ))
+        {
+            IM_ASSERT(false && "Failed to allocate buffers for ImGui geometry.");
+            return;
+        }
+
+        memcpy(vertices.data, draw_list->VtxBuffer.begin(), size_t(draw_list->VtxBuffer.size_in_bytes()));
+        memcpy(indices .data, draw_list->IdxBuffer.begin(), size_t(draw_list->IdxBuffer.size_in_bytes()));
+
+        for (int j = 0; j < draw_list->CmdBuffer.size(); j++)
+        {
+            const ImDrawCmd& cmd = draw_list->CmdBuffer[j];
+
+            if (cmd.UserCallback != nullptr)
+            {
+                cmd.UserCallback(draw_list, &cmd);
+            }
+            else if (cmd.ElemCount)
+            {
+                const ImVec2   scale  = io.DisplayFramebufferScale;
+                const uint32_t offset = cmd.ElemCount * uint32_t(j);
+
+                const uint16_t x(fmaxf(cmd.ClipRect.x * scale.x, 0.0f));
+                const uint16_t y(fmaxf(cmd.ClipRect.y * scale.y, 0.0f));
+                const uint16_t w(fmaxf(cmd.ClipRect.z * scale.x, float(UINT16_MAX)) - x);
+                const uint16_t h(fmaxf(cmd.ClipRect.w * scale.y, float(UINT16_MAX)) - y);
+
+                bgfx::setState       (BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
+                bgfx::setScissor     (x, y, w, h);
+                bgfx::setTexture     (0, bd->sampler, bd->texture);
+                bgfx::setVertexBuffer(0, &vertices);
+                bgfx::setIndexBuffer (&indices, offset, cmd.ElemCount);
+
+                bgfx::submit(bd->view_id, bd->program);
+            }
+        } // draw_list->CmdBuffer.size()
+    } // draw_data->CmdListsCount
 }
 
 bool ImGui_ImplBgfx_CreateFontsTexture()
