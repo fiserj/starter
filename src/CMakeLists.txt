@@ -67,3 +67,8 @@ include(cmake/add_shader_dependency.cmake)
 
 add_shader_dependency(${NAME} "shaders/position_color.vs")
 add_shader_dependency(${NAME} "shaders/position_color.fs")
+
+if(WITH_IMGUI)
+    add_shader_dependency(${NAME} "shaders/imgui.vs" "shaders/imgui.varying.def.sc")
+    add_shader_dependency(${NAME} "shaders/imgui.fs" "shaders/imgui.varying.def.sc")
+endif()

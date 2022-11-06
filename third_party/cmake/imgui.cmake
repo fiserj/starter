@@ -13,9 +13,12 @@ add_library(imgui STATIC
     src/imgui_impl_bgfx.h
 )
 
-target_include_directories(imgui PUBLIC
-    ${IMGUI_DIR}
-    ${IMGUI_DIR}/backends
+target_include_directories(imgui
+    PRIVATE
+        "${CMAKE_BINARY_DIR}/shaders" # TODO : Replace with target dependency.
+    PUBLIC
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
 )
 
 target_link_libraries(imgui PUBLIC
