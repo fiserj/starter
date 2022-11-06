@@ -93,7 +93,7 @@ FetchContent_MakeAvailable(glfw)
 
 if(WITH_IMGUI)
     FetchContent_Declare(
-        gleq
+        imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
         GIT_TAG        69beaa1d0b7fc8f4b448dcf1780b08cfc959da65 # docking branch
     )
