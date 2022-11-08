@@ -22,6 +22,12 @@
 #endif
 #include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
 
+#if WITH_IMGUI
+#   include <imgui.h>                  // ImGui::*
+#   include <imgui_impl_bgfx.h>        // ImGui_ImplBgfx_*
+#   include <imgui_impl_glfw.h>        // ImGui_ImplGlfw_*
+#endif
+
 #if BX_PLATFORM_OSX
 #   import <Cocoa/Cocoa.h>             // NSWindow
 #   import <QuartzCore/CAMetalLayer.h> // CAMetalLayer
@@ -114,6 +120,42 @@ static CAMetalLayer* create_metal_layer(NSWindow* window)
 }
 
 // -----------------------------------------------------------------------------
+// IMGUI
+// -----------------------------------------------------------------------------
+
+#if WITH_IMGUI
+
+static void imgui_init(GLFWwindow* window)
+{
+    IMGUI_CHECKVERSION();
+
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.IniFilename  = nullptr;
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOther(window, true);
+    ImGui_ImplBgfx_Init(bgfx::getCaps()->limits.maxViews - 1);
+
+    io.Fonts->AddFontDefault();
+}
+
+static void imgui_shutdown()
+{
+    ImGui_ImplBgfx_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+
+    ImGui::DestroyContext();
+}
+
+#endif // WITH_IMGUI
+
+
+// -----------------------------------------------------------------------------
 // MAIN APPLICATION RUNTIME
 // -----------------------------------------------------------------------------
 
@@ -189,13 +231,37 @@ static int run(int, char**)
 
     bgfx::setViewClear(0 , BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
+#if WITH_IMGUI
+    // ImGui setup -------------------------------------------------------------
+    imgui_init(window);
+    defer(imgui_shutdown());
+
+    bool show_imgui_demo_window = true;
+#endif
+
     // Program loop ------------------------------------------------------------
     while (!glfwWindowShouldClose(window))
     {
-        // Update of inputs.
+        // Update inputs.
         glfwPollEvents();
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        bool imgui_wants_keyboard = false;
+
+#if WITH_IMGUI
+        // Update ImGui.
+        ImGui_ImplBgfx_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        if (show_imgui_demo_window)
+        {
+            ImGui::ShowDemoWindow(&show_imgui_demo_window);
+        }
+
+        imgui_wants_keyboard = ImGui::GetIO().WantCaptureKeyboard;
+#endif
+ 
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && !imgui_wants_keyboard)
         {
             break;
         }
@@ -238,6 +304,12 @@ static int run(int, char**)
 
             bgfx::submit(0, program);
         }
+
+#if WITH_IMGUI
+        // Render and submit ImGui.
+        ImGui::Render();
+        ImGui_ImplBgfx_RenderDrawData(ImGui::GetDrawData());
+#endif
 
         // Submit recorded rendering operations.
         bgfx::frame();

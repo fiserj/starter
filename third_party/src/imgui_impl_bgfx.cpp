@@ -1,7 +1,8 @@
 #include "imgui_impl_bgfx.h"
 
 #include <math.h>                 // fmaxf
-#include <stdint.h>               // uint*_t
+#include <stddef.h>               // size_t
+#include <stdint.h>               // UINT16_MAX, uint*_t
 #include <string.h>               // memcpy
 
 #include <bgfx/bgfx.h>            // bgfx::*
@@ -57,12 +58,12 @@ void ImGui_ImplBgfx_Shutdown()
 {
     ImGui_ImplBgfx_DestroyDeviceObjects();
 
+    ImGui_ImplBgfx_Data* bd = ImGui_ImplBgfx_GetBackendData();
+    IM_DELETE(bd);
+
     ImGuiIO& io = ImGui::GetIO();
     io.BackendRendererUserData = nullptr;
     io.BackendRendererName     = nullptr;
-
-    ImGui_ImplBgfx_Data* bd = ImGui_ImplBgfx_GetBackendData();
-    IM_DELETE(bd);
 }
 
 void ImGui_ImplBgfx_NewFrame()
@@ -134,19 +135,28 @@ void ImGui_ImplBgfx_RenderDrawData(ImDrawData* draw_data)
             }
             else if (cmd.ElemCount)
             {
-                const ImVec2   scale  = io.DisplayFramebufferScale;
-                const uint32_t offset = cmd.ElemCount * uint32_t(j);
+                const ImVec4 rect  = cmd.ClipRect;
+                const ImVec2 scale = io.DisplayFramebufferScale;
 
-                const uint16_t x(fmaxf(cmd.ClipRect.x * scale.x, 0.0f));
-                const uint16_t y(fmaxf(cmd.ClipRect.y * scale.y, 0.0f));
-                const uint16_t w(fmaxf(cmd.ClipRect.z * scale.x, float(UINT16_MAX)) - x);
-                const uint16_t h(fmaxf(cmd.ClipRect.w * scale.y, float(UINT16_MAX)) - y);
+                const uint16_t x(fmaxf(rect.x * scale.x, 0.0f));
+                const uint16_t y(fmaxf(rect.y * scale.y, 0.0f));
+                const uint16_t w(fmaxf(rect.z * scale.x, float(UINT16_MAX)) - x);
+                const uint16_t h(fmaxf(rect.w * scale.y, float(UINT16_MAX)) - y);
 
-                bgfx::setState       (BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
-                bgfx::setScissor     (x, y, w, h);
-                bgfx::setTexture     (0, bd->sampler, bd->texture);
+                const bgfx::TextureHandle texture = cmd.GetTexID() != nullptr
+                    ? bgfx::TextureHandle{uint16_t(uintptr_t(cmd.GetTexID()))}
+                    : bd->texture;
+
+                constexpr uint64_t state =
+                    BGFX_STATE_WRITE_RGB   |
+                    BGFX_STATE_WRITE_A     |
+                    BGFX_STATE_BLEND_ALPHA ;
+
+                bgfx::setState(state);
+                bgfx::setScissor(x, y, w, h);
+                bgfx::setTexture(0, bd->sampler, texture);
                 bgfx::setVertexBuffer(0, &vertices);
-                bgfx::setIndexBuffer (&indices, offset, cmd.ElemCount);
+                bgfx::setIndexBuffer(&indices, cmd.IdxOffset, cmd.ElemCount);
 
                 bgfx::submit(bd->view_id, bd->program);
             }
@@ -158,7 +168,7 @@ bool ImGui_ImplBgfx_CreateFontsTexture()
 {
     uint8_t* data;
     int      width, height;
-    ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&data, &width, &height);
+    ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&data, &width, &height);
 
     ImGui_ImplBgfx_Data* bd = ImGui_ImplBgfx_GetBackendData();
     bd->texture = bgfx::createTexture2D(
@@ -168,7 +178,7 @@ bool ImGui_ImplBgfx_CreateFontsTexture()
         1,
         bgfx::TextureFormat::RGBA8,
         0,
-        bgfx::copy(data, uint32_t(width) * uint32_t(height))
+        bgfx::copy(data, uint32_t(width) * uint32_t(height) * 4)
     );
     IM_ASSERT(bgfx::isValid(bd->texture));
 
