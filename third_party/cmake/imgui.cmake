@@ -36,3 +36,8 @@ set_target_properties(imgui PROPERTIES
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
 )
+
+include(../src/cmake/add_shader_dependency.cmake)
+
+add_shader_dependency(imgui "../src/imgui.vs" "../src/varying.def.sc" "${CMAKE_BINARY_DIR}/src")
+add_shader_dependency(imgui "../src/imgui2.fs" "../src/varying.def.sc" "${CMAKE_BINARY_DIR}/src")
