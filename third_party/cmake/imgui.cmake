@@ -40,4 +40,4 @@ set_target_properties(imgui PROPERTIES
 include(../src/cmake/add_shader_dependency.cmake)
 
 add_shader_dependency(imgui "../src/imgui.vs" "../src/varying.def.sc" "${CMAKE_BINARY_DIR}/src")
-add_shader_dependency(imgui "../src/imgui2.fs" "../src/varying.def.sc" "${CMAKE_BINARY_DIR}/src")
+add_shader_dependency(imgui "../src/imgui.fs" "../src/varying.def.sc" "${CMAKE_BINARY_DIR}/src")

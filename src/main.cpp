@@ -22,7 +22,7 @@
 #endif
 #include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
 
-#if WITH_IMGUI
+#ifdef WITH_IMGUI
 #   include <imgui.h>                  // ImGui::*
 #   include <imgui_impl_bgfx.h>        // ImGui_ImplBgfx_*
 #   include <imgui_impl_glfw.h>        // ImGui_ImplGlfw_*
@@ -123,7 +123,7 @@ static CAMetalLayer* create_metal_layer(NSWindow* window)
 // IMGUI
 // -----------------------------------------------------------------------------
 
-#if WITH_IMGUI
+#ifdef WITH_IMGUI
 
 static void imgui_init(GLFWwindow* window)
 {
@@ -231,7 +231,7 @@ static int run(int, char**)
 
     bgfx::setViewClear(0 , BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
-#if WITH_IMGUI
+#ifdef WITH_IMGUI
     // ImGui setup -------------------------------------------------------------
     imgui_init(window);
     defer(imgui_shutdown());
@@ -247,7 +247,7 @@ static int run(int, char**)
 
         bool imgui_wants_keyboard = false;
 
-#if WITH_IMGUI
+#ifdef WITH_IMGUI
         // Update ImGui.
         ImGui_ImplBgfx_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -305,7 +305,7 @@ static int run(int, char**)
             bgfx::submit(0, program);
         }
 
-#if WITH_IMGUI
+#ifdef WITH_IMGUI
         // Render and submit ImGui.
         ImGui::Render();
         ImGui_ImplBgfx_RenderDrawData(ImGui::GetDrawData());
