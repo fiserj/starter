@@ -23,9 +23,7 @@
 #include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
 
 #ifdef WITH_IMGUI
-#   include <imgui.h>                  // ImGui::*
-#   include <imgui_impl_bgfx.h>        // ImGui_ImplBgfx_*
-#   include <imgui_impl_glfw.h>        // ImGui_ImplGlfw_*
+#   include "imgui.h"                  // imgui_*, ImGui::*
 #endif
 
 #if BX_PLATFORM_OSX
@@ -119,41 +117,6 @@ static CAMetalLayer* create_metal_layer(NSWindow* window)
     return init;
 }
 
-// -----------------------------------------------------------------------------
-// IMGUI
-// -----------------------------------------------------------------------------
-
-#ifdef WITH_IMGUI
-
-static void imgui_init(GLFWwindow* window)
-{
-    IMGUI_CHECKVERSION();
-
-    ImGui::CreateContext();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.IniFilename  = nullptr;
-
-    ImGui::StyleColorsDark();
-
-    ImGui_ImplGlfw_InitForOther(window, true);
-    ImGui_ImplBgfx_Init(bgfx::getCaps()->limits.maxViews - 1);
-
-    io.Fonts->AddFontDefault();
-}
-
-static void imgui_shutdown()
-{
-    ImGui_ImplBgfx_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-
-    ImGui::DestroyContext();
-}
-
-#endif // WITH_IMGUI
-
 
 // -----------------------------------------------------------------------------
 // MAIN APPLICATION RUNTIME
@@ -233,7 +196,7 @@ static int run(int, char**)
 
 #ifdef WITH_IMGUI
     // ImGui setup -------------------------------------------------------------
-    imgui_init(window);
+    imgui_init(window, bgfx::getCaps()->limits.maxViews - 1);
     defer(imgui_shutdown());
 
     bool show_imgui_demo_window = true;
@@ -249,9 +212,7 @@ static int run(int, char**)
 
 #ifdef WITH_IMGUI
         // Update ImGui.
-        ImGui_ImplBgfx_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        imgui_begin_frame();
 
         if (show_imgui_demo_window)
         {
@@ -307,8 +268,7 @@ static int run(int, char**)
 
 #ifdef WITH_IMGUI
         // Render and submit ImGui.
-        ImGui::Render();
-        ImGui_ImplBgfx_RenderDrawData(ImGui::GetDrawData());
+        imgui_end_frame();
 #endif
 
         // Submit recorded rendering operations.

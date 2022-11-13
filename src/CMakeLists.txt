@@ -1,14 +1,12 @@
 set(NAME ${CMAKE_PROJECT_NAME})
 
-if(APPLE)
-    set(EXT mm)
-else()
-    set(EXT cpp)
-endif()
+set(SOURCE_LIST "")
 
-add_executable(${NAME}
-    "main.${EXT}"
-)
+if(APPLE)
+    list(APPEND SOURCE_LIST main.mm)
+else()
+    list(APPEND SOURCE_LIST main.cpp)
+endif()
 
 set(LIBRARY_LIST
     bgfx
@@ -24,6 +22,7 @@ if(WITH_GLEQ)
 endif()
 
 if(WITH_IMGUI)
+    list(APPEND SOURCE_LIST imgui.cpp)
     list(APPEND LIBRARY_LIST imgui)
 endif()
 
@@ -34,6 +33,10 @@ endif()
 if(WITH_STB)
     list(APPEND LIBRARY_LIST stb)
 endif()
+
+add_executable(${NAME}
+    ${SOURCE_LIST}
+)
 
 target_link_libraries(${NAME} PRIVATE
     ${LIBRARY_LIST}
