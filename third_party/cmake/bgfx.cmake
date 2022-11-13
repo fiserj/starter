@@ -17,6 +17,12 @@ target_include_directories(bgfx
         ${BGFX_DIR}/3rdparty/khronos
 )
 
+if(WIN32)
+    target_include_directories(bgfx PRIVATE
+        ${BGFX_DIR}/3rdparty/directx-headers/include/directx
+    )
+endif()
+
 if(APPLE)
     target_link_libraries(bgfx PUBLIC
         "-framework AppKit"
