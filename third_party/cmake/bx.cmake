@@ -22,6 +22,11 @@ if(NOT MSVC)
     target_compile_options(bx PUBLIC
         -Wno-gnu-zero-variadic-macro-arguments
     )
+else()
+    # http://web.archive.org/web/20221109200607/https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=msvc-170
+    target_compile_options(bx PUBLIC
+        "/Zc:__cplusplus"
+    )
 endif()
 
 if(APPLE)
