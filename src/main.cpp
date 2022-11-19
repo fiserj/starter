@@ -136,7 +136,7 @@ static int run(int, char**)
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE); // NOTE : Ignored when `glfwSetWindowSize` called.
 
-    GLFWwindow* window = glfwCreateWindow(1024, 768, "StarterTemplate", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "StarterTemplate", nullptr, nullptr);
     if (window == nullptr)
     {
         return 2;
