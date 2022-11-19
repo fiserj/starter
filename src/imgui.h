@@ -7,11 +7,15 @@ struct GLFWwindow;
 namespace ImGui
 {
 
-void PushMonoSpaceFont();
+void SetGlobalFontSize(float font_size);
+
+float GetGlobalFontSize();
+
+void PushMonospacedFont();
 
 } // namespace ImGui
 
-void imgui_init(GLFWwindow* window, unsigned short view_id, float font_size = 16.0f);
+void imgui_init(GLFWwindow* window, unsigned short view_id, float font_size = 8.0f);
 
 void imgui_shutdown();
 
