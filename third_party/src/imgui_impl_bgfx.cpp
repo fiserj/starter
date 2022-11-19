@@ -1,6 +1,6 @@
 #include "imgui_impl_bgfx.h"
 
-#include <math.h>                 // fmaxf
+#include <math.h>                 // fmaxf, fminf
 #include <stddef.h>               // size_t
 #include <stdint.h>               // UINT16_MAX, uint*_t
 #include <string.h>               // memcpy
@@ -140,8 +140,8 @@ void ImGui_ImplBgfx_RenderDrawData(ImDrawData* draw_data)
 
                 const uint16_t x(fmaxf(rect.x * scale.x, 0.0f));
                 const uint16_t y(fmaxf(rect.y * scale.y, 0.0f));
-                const uint16_t w(fmaxf(rect.z * scale.x, float(UINT16_MAX)) - x);
-                const uint16_t h(fmaxf(rect.w * scale.y, float(UINT16_MAX)) - y);
+                const uint16_t w(fminf(rect.z * scale.x, float(UINT16_MAX)) - x);
+                const uint16_t h(fminf(rect.w * scale.y, float(UINT16_MAX)) - y);
 
                 const bgfx::TextureHandle texture = cmd.GetTexID() != nullptr
                     ? bgfx::TextureHandle{uint16_t(uintptr_t(cmd.GetTexID()))}
