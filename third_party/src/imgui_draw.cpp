@@ -9,7 +9,7 @@
 extern float get_font_size_for_cap_size(const void* font_data, float cap_pixel_size)
 {
     stbtt_fontinfo info = {};
-    info.data = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(font_data));
+    info.data = const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(font_data));
     info.hhea = stbtt__find_table(info.data, info.fontstart, "hhea");
 
     const int table = stbtt__find_table(info.data, info.fontstart, "OS/2");
@@ -19,7 +19,7 @@ extern float get_font_size_for_cap_size(const void* font_data, float cap_pixel_s
         return 0.0f;
     }
 
-    const int16_t cap_height = ttSHORT(info.data + table + 88); // sCapHeight.
+    const stbtt_int16 cap_height = ttSHORT(info.data + table + 88); // sCapHeight.
     IM_ASSERT(cap_height > 0);
 
     int ascent, descent;
