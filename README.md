@@ -22,4 +22,8 @@ the applicable `WITH_...` variable to `ON`.
 | [stb](https://github.com/nothings/stb/commit/8b5f1f37b5b75829fc72d38e7b5d4bcbf8a26d55) | `WITH_STB` |
 
 #### shaderc
-By default, BGFX's `shaderc` compiler is built from source. This can take a relatively long time. Use `WITH_PREBUILT_SHADERC` to attempt to fetch a prebuilt version (might not be available for your platform).
+BGFX's `shaderc` compiler can take a relatively long time to compile. When
+`WITH_PREBUILT_SHADERC` is `ON` (which it is by default), CMake tries to fetch
+prebuilt binary for your platform (currently Windows and macOS x64), and only
+compiles `shaderc` from source otherwise. You can pass CMake
+`WITH_PREBUILT_SHADERC=OFF` to always force compilation from source.

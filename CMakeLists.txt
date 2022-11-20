@@ -2,13 +2,12 @@ cmake_minimum_required(VERSION 3.20)
 
 project(StarterTemplate)
 
-set(WITH_FMT     OFF)
-set(WITH_GLEQ    OFF)
-set(WITH_IMGUI   OFF)
-set(WITH_MESHOPT OFF)
-set(WITH_STB     OFF)
-
-option(WITH_PREBUILT_SHADERC "Attempt to download prebuilt BGFX shader compiler." ON)
+option(WITH_FMT "Build with {fmt} library" OFF)
+option(WITH_GLEQ "Build with GLEQ library" OFF)
+option(WITH_IMGUI "Build with Dear ImGui library" OFF)
+option(WITH_MESHOPT "Build with meshoptimizer library" OFF)
+option(WITH_STB "Build with stb libraries" OFF)
+option(WITH_PREBUILT_SHADERC "Attempt to download prebuilt BGFX shader compiler" ON)
 
 add_subdirectory(third_party)
 add_subdirectory(src)
