@@ -9,10 +9,12 @@ include(FetchContent)
 # BGFX
 # ------------------------------------------------------------------------------
 
+set(BGFX_GIT_TAG e87f08b1e50af8ad416e34fe7365aa5fb6fe5e37)
+
 FetchContent_Declare(
     bgfx
     GIT_REPOSITORY https://github.com/bkaradzic/bgfx.git
-    GIT_TAG        e87f08b1e50af8ad416e34fe7365aa5fb6fe5e37
+    GIT_TAG        ${BGFX_GIT_TAG}
 )
 
 FetchContent_Populate(bgfx)

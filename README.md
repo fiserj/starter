@@ -1,4 +1,5 @@
 # Starter Template
+A graphics application starter package.
 
 ## Libraries
 
@@ -9,10 +10,16 @@
 * [GLFW](https://github.com/glfw/glfw/tree/dd8a678a66f1967372e5a5e3deac41ebf65ee127)
 
 ### Optional
-* [Dear ImGui](https://github.com/ocornut/imgui/tree/69beaa1d0b7fc8f4b448dcf1780b08cfc959da65)
-* [GLEQ](https://github.com/glfw/gleq/tree/4dd5070341fa17856d06a38f948a100df2fc34cd)
-* [meshoptimizer](https://github.com/zeux/meshoptimizer/tree/c4cfc3581f37ae70fa274bef37584a588ae266ab)
-* [stb](https://github.com/nothings/stb/commit/8b5f1f37b5b75829fc72d38e7b5d4bcbf8a26d55)
-
 To enable an optional library, go to [CMakeLists.txt](CMakeLists.txt) and set
 the applicable `WITH_...` variable to `ON`.
+
+| Library | CMake Option |
+| ------------- | ------------- |
+| [Dear ImGui](https://github.com/ocornut/imgui/tree/69beaa1d0b7fc8f4b448dcf1780b08cfc959da65) | `WITH_IMGUI` |
+| [{fmt}](https://github.com/fmtlib/fmt/commit/80f8d34427d40ec5e7ce3b10ededc46bd4bd5759) | `WITH_FMT` |
+| [GLEQ](https://github.com/glfw/gleq/tree/4dd5070341fa17856d06a38f948a100df2fc34cd) | `WITH_GLEQ` |
+| [meshoptimizer](https://github.com/zeux/meshoptimizer/tree/c4cfc3581f37ae70fa274bef37584a588ae266ab) | `WITH_MESHOPT` |
+| [stb](https://github.com/nothings/stb/commit/8b5f1f37b5b75829fc72d38e7b5d4bcbf8a26d55) | `WITH_STB` |
+
+#### shaderc
+By default, BGFX's `shaderc` compiler is built from source. This can take a relatively long time. Use `WITH_PREBUILT_SHADERC` to attempt to fetch a prebuilt version (might not be available for your platform).
