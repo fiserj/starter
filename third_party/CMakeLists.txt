@@ -54,6 +54,24 @@ include(cmake/bx.cmake)
 
 
 # ------------------------------------------------------------------------------
+# CATCH2
+# ------------------------------------------------------------------------------
+
+TURN_OFF(CATCH_INSTALL_DOCS)
+TURN_OFF(CATCH_INSTALL_EXTRAS)
+
+if(WITH_CATCH2)
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v3.2.0
+    )
+
+    FetchContent_MakeAvailable(Catch2)
+endif()
+
+
+# ------------------------------------------------------------------------------
 # FMT
 # ------------------------------------------------------------------------------
 

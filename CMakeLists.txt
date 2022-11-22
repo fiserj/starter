@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(StarterTemplate)
 
+option(WITH_CATCH2 "Build with Catch2 library" OFF)
 option(WITH_FMT "Build with {fmt} library" OFF)
 option(WITH_GLEQ "Build with GLEQ library" OFF)
 option(WITH_IMGUI "Build with Dear ImGui library" OFF)

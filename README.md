@@ -15,6 +15,7 @@ the applicable `WITH_...` variable to `ON`.
 
 | Library | CMake Option |
 | ------------- | ------------- |
+| [Catch2](https://github.com/catchorg/Catch2/tree/65cc7fd2ae39a7a543767f661b096d7d521ee4f0) | `WITH_CATCH2` |
 | [Dear ImGui](https://github.com/ocornut/imgui/tree/69beaa1d0b7fc8f4b448dcf1780b08cfc959da65) | `WITH_IMGUI` |
 | [{fmt}](https://github.com/fmtlib/fmt/commit/80f8d34427d40ec5e7ce3b10ededc46bd4bd5759) | `WITH_FMT` |
 | [GLEQ](https://github.com/glfw/gleq/tree/4dd5070341fa17856d06a38f948a100df2fc34cd) | `WITH_GLEQ` |
