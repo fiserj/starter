@@ -168,6 +168,10 @@ else()
                 -P "${SCRIPT}"
         )
 
+        set_target_properties("${NAME}" PROPERTIES
+            FOLDER "Shaders"
+        )
+
         add_dependencies(${TARGET} "${NAME}")
 
         add_dependencies("${NAME}" bgfx)
