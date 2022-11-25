@@ -10,8 +10,8 @@
 
 #include <imgui.h>                // GetCurrentContext, GetIO
 
-#include <imgui_fs.h>             // imgui_fs_*
-#include <imgui_vs.h>             // imgui_vs_
+#include <src/imgui_fs.h>        // imgui_fs_*
+#include <src/imgui_vs.h>        // imgui_vs_
 
 struct ImGui_ImplBgfx_Data
 {

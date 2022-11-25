@@ -10,7 +10,7 @@ if(BUILD_SHADER_TARGET)
         set(SHADERC_TARGETS  "spv,spirv13-11")
     elseif(WIN32)
         set(SHADERC_PLATFORM "windows")
-        set(SHADERC_TARGETS  "dx12,s_5_0")
+        set(SHADERC_TARGETS  "dx11,s_5_0")
     else()
         message(FATAL_ERROR "Unknown platform. Must be Apple, Linux or Windows.")
     endif()
@@ -47,8 +47,11 @@ if(BUILD_SHADER_TARGET)
 
         # Output file.
         get_filename_component(OUTPUT_SUBDIR ${SHADER_SUBPATH} DIRECTORY)
+        string(REGEX REPLACE "\\.+/" "" OUTPUT_SUBDIR ${OUTPUT_SUBDIR})
+
         get_filename_component(OUTPUT_FILE ${SHADER_SUBPATH} NAME)
         string(REPLACE "." "_" OUTPUT_FILE ${OUTPUT_FILE})
+
         set(FULL_OUTPUT_SUBDIR "${OUTPUT_DIR}/${OUTPUT_SUBDIR}/${SUBDIR}")
         set(FULL_OUTPUT_FILE "${FULL_OUTPUT_SUBDIR}/${OUTPUT_FILE}_${SUBDIR}.h")
 
@@ -155,6 +158,7 @@ if(BUILD_SHADER_TARGET)
 else()
     function(add_shader_target TARGET SHADER VARYING RELDIR SCRIPT SHADER_HEADER_CONFIG OUTPUT_DIR)
         string(REGEX REPLACE "[\\/\.]+" "_" NAME ${SHADER})
+        string(REGEX REPLACE "^_" "" NAME ${NAME})
 
         add_custom_target("${NAME}"
             COMMAND ${CMAKE_COMMAND}
