@@ -48,7 +48,7 @@ struct Deferred
 
     Deferred& operator=(const Deferred&) = delete;
 
-    Deferred(Func&& func)
+    explicit Deferred(Func&& func)
         : func(static_cast<Func&&>(func))
     {
     }
