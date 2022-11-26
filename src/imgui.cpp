@@ -1,15 +1,15 @@
 #include "imgui.h"
 
-#include <math.h>            // roundf
-#include <string.h>          // strncpy
+#include <math.h>                    // roundf
+#include <string.h>                  // strncpy
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>      // glfwGetWindowContentScale
+#include <GLFW/glfw3.h>              // glfwGetWindowContentScale
 
-#include <imgui_impl_bgfx.h> // ImGui_ImplBgfx_*
-#include <imgui_impl_glfw.h> // ImGui_ImplGlfw_*
+#include <imgui_impl_bgfx.h>         // ImGui_ImplBgfx_*
+#include <imgui_impl_glfw_patched.h> // ImGui_ImplGlfw_*
 
-#include "imgui_fonts.h"     // imgui_font_*
+#include "imgui_fonts.h"             // imgui_font_*
 
 
 // Defined in patched version of `imgui_draw.cpp`.
@@ -105,7 +105,7 @@ void imgui_init(GLFWwindow* window, unsigned short view_id, float font_size)
 
     ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOther(window, true);
+    ImGui_ImplGlfwPatched_Init(window);
     ImGui_ImplBgfx_Init(view_id);
 
     FontContext* font_ctx = IM_NEW(FontContext)();
@@ -132,7 +132,7 @@ void imgui_shutdown()
 void imgui_begin_frame()
 {
     ImGui_ImplBgfx_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplGlfwPatched_NewFrame();
 
     FontContext* font_ctx = get_font_context();
     font_ctx->update_frame_fonts(ImGui::GetIO().DisplayFramebufferScale.x);

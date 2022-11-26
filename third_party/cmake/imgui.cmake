@@ -6,8 +6,9 @@ add_library(imgui STATIC
     ${IMGUI_DIR}/imgui_demo.cpp
     ${IMGUI_DIR}/imgui_tables.cpp
     ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.h
+    src/imgui_impl_glfw_patched.cpp
+    src/imgui_impl_glfw_patched.h
     src/imgui_draw_patched.cpp
     src/imgui_impl_bgfx.cpp
     src/imgui_impl_bgfx.h
