@@ -9,12 +9,12 @@
 
 static void ImGui_ImplGlfwPatched_CursorPosCallback(GLFWwindow* window, double x, double y)
 {
-    ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
+    const ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
     IM_ASSERT(bd != nullptr);
     IM_ASSERT(bd->InstalledCallbacks == true);
     IM_ASSERT(bd->Window == window);
 
-    if (bd->ClientApi == -1)
+    if (static_cast<int>(bd->ClientApi) == -1)
     {
         const ImVec2 scale = ImGui::GetIO().DisplayFramebufferScale;
 
@@ -44,13 +44,12 @@ static void ImGui_ImplGlfwPatched_UpdateScaleInfo()
 
     for (int i = 0; i < 2; i++)
     {
-        const float size = window_size[i] * content_scale[i];
-        const float diff = fabsf(size - framebuffer_size[i]);
-
+        const float diff = fabsf(window_size[i] * content_scale[i] - framebuffer_size[i]);
         float retina_size;
+
         if (diff < 1.0f)
         {
-            retina_size = size;
+            retina_size  = window_size[i];
         }
         else
         {
