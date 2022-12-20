@@ -235,10 +235,10 @@ target_include_directories(spirv_opt
 
 if(MSVC)
     target_compile_options(spirv_opt PRIVATE
-        /wd4127
-        /wd4389
-        /wd4702
-        /wd4706
+        /wd4127 # warning C4127: conditional expression is constant
+        /wd4389 # warning C4389: '==': signed/unsigned mismatch
+        /wd4702 # warning C4702: unreachable code
+        /wd4706 # warning C4706: assignment within conditional expression
     )
 endif()
 
@@ -293,10 +293,10 @@ target_compile_definitions(spirv_cross PUBLIC
 
 if(MSVC)
     target_compile_options(spirv_cross PRIVATE
-        /wd4018
-        /wd4245
-        /wd4706
-        /wd4715
+        /wd4018 # warning C4018: '<': signed/unsigned mismatch
+        /wd4245 # warning C4245: 'return': conversion from 'int' to 'unsigned int', signed/unsigned mismatch
+        /wd4706 # warning C4706: assignment within conditional expression
+        /wd4715 # warning C4715: '': not all control paths return a value
     )
 endif()
 
