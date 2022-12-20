@@ -428,9 +428,6 @@ endif()
 
 if(APPLE OR LINUX OR MINGW)
     target_compile_options(glslang PRIVATE
-        -Wno-logical-op
-        -Wno-maybe-uninitialized
-
         -fno-strict-aliasing
         -Wno-ignored-qualifiers
         -Wno-implicit-fallthrough
@@ -448,7 +445,13 @@ if(APPLE OR LINUX OR MINGW)
 
         -Wno-unused-const-variable
         -Wno-deprecated-register
+    )
+endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(glslang PRIVATE
+        -Wno-logical-op
+        -Wno-maybe-uninitialized
         -Wno-unused-but-set-variable
     )
 endif()
