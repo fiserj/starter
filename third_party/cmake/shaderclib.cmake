@@ -284,6 +284,7 @@ add_library(spirv_cross STATIC
 )
 
 target_include_directories(spirv_cross PUBLIC
+    ${SPIRV_CROSS}
     ${SPIRV_CROSS}include
 )
 
@@ -388,6 +389,8 @@ target_include_directories(glslang
     PUBLIC
         ${GLSLANG}
         ${GLSLANG}..
+        ${GLSLANG}glslang/Include
+        ${GLSLANG}glslang/Public
         ${SPIRV_TOOLS}include
     PRIVATE
         ${SPIRV_TOOLS}source
@@ -568,11 +571,11 @@ add_library(glsl_optimizer STATIC
 target_include_directories(glsl_optimizer
     PUBLIC
         ${GLSL_OPTIMIZER}include
+        ${GLSL_OPTIMIZER}src/glsl
     PRIVATE
         ${GLSL_OPTIMIZER}src
         ${GLSL_OPTIMIZER}src/mesa
         ${GLSL_OPTIMIZER}src/mapi
-        ${GLSL_OPTIMIZER}src/glsl
 )
 
 if(MSVC)
@@ -622,4 +625,118 @@ endif()
 
 set_target_properties(glsl_optimizer PROPERTIES
     FOLDER "shaderc"
+)
+
+
+# ------------------------------------------------------------------------------
+# FCPP
+# ------------------------------------------------------------------------------
+
+add_library(fcpp STATIC
+    ${FCPP_DIR}cpp1.c
+    ${FCPP_DIR}cpp2.c
+    ${FCPP_DIR}cpp3.c
+    ${FCPP_DIR}cpp4.c
+    ${FCPP_DIR}cpp5.c
+    ${FCPP_DIR}cpp6.c
+    ${FCPP_DIR}cpp6.c
+)
+
+target_include_directories(fcpp PUBLIC
+    ${FCPP_DIR}
+)
+
+if(MSVC)
+    target_compile_options(fcpp PRIVATE
+        /wd4055 # warning C4055: 'type cast': from data pointer 'void *' to function pointer 'void (__cdecl *)(char *,void *)'
+        /wd4244 # warning C4244: '=': conversion from 'const flex_int32_t' to 'YY_CHAR', possible loss of data
+        /wd4701 # warning C4701: potentially uninitialized local variable 'lower' used
+        /wd4706 # warning C4706: assignment within conditional expression
+    )
+else()
+    target_compile_options(fcpp PRIVATE
+        -Wno-implicit-fallthrough
+        -Wno-incompatible-pointer-types
+        -Wno-parentheses-equality
+    )
+endif()
+
+set_target_properties(fcpp PROPERTIES
+    FOLDER "shaderc"
+)
+
+
+# ------------------------------------------------------------------------------
+# SHADERC EXECUTABLE
+# ------------------------------------------------------------------------------
+
+add_executable(shaderc
+    ${bgfx_SOURCE_DIR}/src/shader.cpp
+    ${bgfx_SOURCE_DIR}/src/shader_dx9bc.cpp
+    ${bgfx_SOURCE_DIR}/src/shader_dxbc.cpp
+    ${bgfx_SOURCE_DIR}/src/shader_spirv.cpp
+    ${bgfx_SOURCE_DIR}/src/vertexlayout.cpp
+    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc.cpp
+    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_glsl.cpp
+    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_hlsl.cpp
+    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_metal.cpp
+    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_pssl.cpp
+    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_spirv.cpp
+)
+
+target_include_directories(shaderc PRIVATE
+    ${bgfx_SOURCE_DIR}/3rdparty/webgpu/include
+    ${bgfx_SOURCE_DIR}/3rdparty/dxsdk/include
+    ${bgfx_SOURCE_DIR}/include
+)
+
+target_link_libraries(shaderc PRIVATE
+    bimg
+    bx
+    fcpp
+    glsl_optimizer
+    glslang
+    spirv_cross
+    spirv_opt
+)
+
+if(WIN32)
+    target_link_libraries(shaderc PRIVATE
+        Psapi.lib
+    )
+endif()
+
+if(APPLE)
+    target_link_libraries(shaderc PRIVATE
+        "-framework Cocoa"
+    )
+endif()
+
+if(APPLE OR LINUX)
+    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+
+    find_package(Threads REQUIRED)
+
+    target_link_libraries(shaderc PRIVATE
+        Threads::Threads
+    )
+endif()
+
+set_target_properties(shaderc PROPERTIES
+    FOLDER "shaderc"
+)
+
+if(APPLE)
+    set(SHADERC_PLATFORM osx)
+elseif(WIN32)
+    set(SHADERC_PLATFORM windows)
+else()
+    message(FATAL_ERROR "Unsupported platform.")
+endif()
+
+add_custom_command(
+    TARGET shaderc
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:shaderc> "${CMAKE_SOURCE_DIR}/tools/shaderc/${SHADERC_PLATFORM}"
 )
