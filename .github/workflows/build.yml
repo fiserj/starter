@@ -1,3 +1,10 @@
+- name: Branch-based environment variables that rock
+  uses: iamtheyammer/branch-env-vars@v1.2.1
+  with:
+    WITH_PREBUILT_SHADERC: |
+      master:OFF
+      !default:ON
+
 name: Build Verification
 
 on:
@@ -40,7 +47,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Configure
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_CATCH2=ON -DWITH_FMT=ON -DWITH_GLEQ=ON -DWITH_IMGUI=ON -DWITH_MESHOPT=ON -DWITH_STB=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_CATCH2=ON -DWITH_FMT=ON -DWITH_GLEQ=ON -DWITH_IMGUI=ON -DWITH_MESHOPT=ON -DWITH_STB=ON -DWITH_PREBUILT_SHADERC=${{WITH_PREBUILT_SHADERC}}
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
