@@ -309,3 +309,142 @@ endif()
 set_target_properties(spirv_cross PROPERTIES
     FOLDER "shaderc"
 )
+
+
+# ------------------------------------------------------------------------------
+# GLSLANG
+# ------------------------------------------------------------------------------
+
+set(GLSLANG_SOURCES
+    ${GLSLANG}glslang/CInterface/glslang_c_interface.cpp
+    ${GLSLANG}glslang/GenericCodeGen/CodeGen.cpp
+    ${GLSLANG}glslang/GenericCodeGen/Link.cpp
+    ${GLSLANG}glslang/HLSL/hlslAttributes.cpp
+    ${GLSLANG}glslang/HLSL/hlslGrammar.cpp
+    ${GLSLANG}glslang/HLSL/hlslOpMap.cpp
+    ${GLSLANG}glslang/HLSL/hlslParseables.cpp
+    ${GLSLANG}glslang/HLSL/hlslParseHelper.cpp
+    ${GLSLANG}glslang/HLSL/hlslScanContext.cpp
+    ${GLSLANG}glslang/HLSL/hlslTokenStream.cpp
+    ${GLSLANG}glslang/MachineIndependent/attribute.cpp
+    ${GLSLANG}glslang/MachineIndependent/Constant.cpp
+    ${GLSLANG}glslang/MachineIndependent/glslang_tab.cpp
+    ${GLSLANG}glslang/MachineIndependent/InfoSink.cpp
+    ${GLSLANG}glslang/MachineIndependent/Initialize.cpp
+    ${GLSLANG}glslang/MachineIndependent/Intermediate.cpp
+    ${GLSLANG}glslang/MachineIndependent/intermOut.cpp
+    ${GLSLANG}glslang/MachineIndependent/IntermTraverse.cpp
+    ${GLSLANG}glslang/MachineIndependent/iomapper.cpp
+    ${GLSLANG}glslang/MachineIndependent/limits.cpp
+    ${GLSLANG}glslang/MachineIndependent/linkValidate.cpp
+    ${GLSLANG}glslang/MachineIndependent/parseConst.cpp
+    ${GLSLANG}glslang/MachineIndependent/ParseContextBase.cpp
+    ${GLSLANG}glslang/MachineIndependent/ParseHelper.cpp
+    ${GLSLANG}glslang/MachineIndependent/PoolAlloc.cpp
+    ${GLSLANG}glslang/MachineIndependent/propagateNoContraction.cpp
+    ${GLSLANG}glslang/MachineIndependent/reflection.cpp
+    ${GLSLANG}glslang/MachineIndependent/RemoveTree.cpp
+    ${GLSLANG}glslang/MachineIndependent/Scan.cpp
+    ${GLSLANG}glslang/MachineIndependent/ShaderLang.cpp
+    ${GLSLANG}glslang/MachineIndependent/SpirvIntrinsics.cpp
+    ${GLSLANG}glslang/MachineIndependent/SymbolTable.cpp
+    ${GLSLANG}glslang/MachineIndependent/Versions.cpp
+    ${GLSLANG}glslang/MachineIndependent/preprocessor/Pp.cpp
+    ${GLSLANG}glslang/MachineIndependent/preprocessor/PpAtom.cpp
+    ${GLSLANG}glslang/MachineIndependent/preprocessor/PpContext.cpp
+    ${GLSLANG}glslang/MachineIndependent/preprocessor/PpScanner.cpp
+    ${GLSLANG}glslang/MachineIndependent/preprocessor/PpTokens.cpp
+    ${GLSLANG}glslang/OSDependent/Web/glslang.js.cpp
+
+    ${GLSLANG}hlsl/stub.cpp
+
+    ${GLSLANG}SPIRV/disassemble.cpp
+    ${GLSLANG}SPIRV/doc.cpp
+    ${GLSLANG}SPIRV/GlslangToSpv.cpp
+    ${GLSLANG}SPIRV/InReadableOrder.cpp
+    ${GLSLANG}SPIRV/Logger.cpp
+    ${GLSLANG}SPIRV/SpvBuilder.cpp
+    ${GLSLANG}SPIRV/SpvPostProcess.cpp
+    ${GLSLANG}SPIRV/SPVRemapper.cpp
+    ${GLSLANG}SPIRV/SpvTools.cpp
+    ${GLSLANG}SPIRV/CInterface/spirv_c_interface.cpp
+
+    ${GLSLANG}OGLCompilersDLL/InitializeDll.cpp
+)
+
+if(WIN32)
+    list(APPEND GLSLANG_SOURCES
+        ${GLSLANG}glslang/OSDependent/Windows/ossource.cpp
+    )
+else()
+    list(APPEND GLSLANG_SOURCES
+        ${GLSLANG}glslang/OSDependent/Unix/ossource.cpp
+    )
+endif()
+
+add_library(glslang STATIC ${GLSLANG_SOURCES})
+
+target_include_directories(glslang
+    PUBLIC
+        ${GLSLANG}
+        ${GLSLANG}..
+        ${SPIRV_TOOLS}include
+    PRIVATE
+        ${SPIRV_TOOLS}source
+)
+
+target_compile_definitions(glslang PUBLIC
+    ENABLE_HLSL=1
+    ENABLE_OPT=1
+)
+
+if(MSVC)
+    target_compile_options(glslang PRIVATE
+        /wd4005 # warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
+        /wd4065 # warning C4065: switch statement contains 'default' but no 'case' labels
+        /wd4100 # warning C4100: 'inclusionDepth' : unreferenced formal parameter
+        /wd4127 # warning C4127: conditional expression is constant
+        /wd4189 # warning C4189: 'isFloat': local variable is initialized but not referenced
+        /wd4244 # warning C4244: '=': conversion from 'int' to 'char', possible loss of data
+        /wd4310 # warning C4310: cast truncates constant value
+        /wd4389 # warning C4389: '==': signed/unsigned mismatch
+        /wd4456 # warning C4456: declaration of 'feature' hides previous local declaration
+        /wd4457 # warning C4457: declaration of 'token' hides function parameter
+        /wd4458 # warning C4458: declaration of 'language' hides class member
+        /wd4702 # warning C4702: unreachable code
+        /wd4715 # warning C4715: 'spv::Builder::makeFpConstant': not all control paths return a value
+        /wd4838 # warning C4838: conversion from 'spv::GroupOperation' to 'unsigned int' requires a narrowing conversion
+    )
+endif()
+
+if(APPLE OR LINUX OR MINGW)
+    target_compile_options(glslang PRIVATE
+        -Wno-logical-op
+        -Wno-maybe-uninitialized
+
+        -fno-strict-aliasing
+        -Wno-ignored-qualifiers
+        -Wno-implicit-fallthrough
+        -Wno-missing-field-initializers
+        -Wno-reorder
+        -Wno-return-type
+        -Wno-shadow
+        -Wno-sign-compare
+        -Wno-switch
+        -Wno-undef
+        -Wno-unknown-pragmas
+        -Wno-unused-function
+        -Wno-unused-parameter
+        -Wno-unused-variable
+
+        -Wno-c++11-extensions
+        -Wno-unused-const-variable
+        -Wno-deprecated-register
+
+        -Wno-unused-but-set-variable
+    )
+endif()
+
+set_target_properties(glslang PROPERTIES
+    FOLDER "shaderc"
+)
