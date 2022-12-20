@@ -250,6 +250,9 @@ if(APPLE OR LINUX OR MINGW)
 endif()
 
 set_target_properties(spirv_opt PROPERTIES
+    CXX_STANDARD 20
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED ON
     FOLDER "shaderc"
 )
 
@@ -308,6 +311,9 @@ if(APPLE OR LINUX OR MINGW)
 endif()
 
 set_target_properties(spirv_cross PROPERTIES
+    CXX_STANDARD 20
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED ON
     FOLDER "shaderc"
 )
 
@@ -440,7 +446,6 @@ if(APPLE OR LINUX OR MINGW)
         -Wno-unused-parameter
         -Wno-unused-variable
 
-        -Wno-c++11-extensions
         -Wno-unused-const-variable
         -Wno-deprecated-register
 
@@ -449,6 +454,9 @@ if(APPLE OR LINUX OR MINGW)
 endif()
 
 set_target_properties(glslang PROPERTIES
+    CXX_STANDARD 20
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED ON
     FOLDER "shaderc"
 )
 
@@ -624,6 +632,9 @@ if(APPLE OR LINUX OR MINGW)
 endif()
 
 set_target_properties(glsl_optimizer PROPERTIES
+    CXX_STANDARD 20
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED ON
     FOLDER "shaderc"
 )
 
@@ -662,6 +673,12 @@ else()
 endif()
 
 set_target_properties(fcpp PROPERTIES
+    C_STANDARD 99
+    C_EXTENSIONS OFF
+    C_STANDARD_REQUIRED ON
+    CXX_STANDARD 20
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED ON
     FOLDER "shaderc"
 )
 
@@ -724,6 +741,9 @@ if(APPLE OR LINUX)
 endif()
 
 set_target_properties(shaderc PROPERTIES
+    CXX_STANDARD 20
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED ON
     FOLDER "shaderc"
 )
 
