@@ -761,5 +761,6 @@ endif()
 add_custom_command(
     TARGET shaderc
     POST_BUILD
+    COMMAND echo Copying built shaderc binary.
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:shaderc> "${CMAKE_SOURCE_DIR}/tools/shaderc/${SHADERC_PLATFORM}"
 )
