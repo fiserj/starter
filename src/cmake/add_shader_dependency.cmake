@@ -30,11 +30,11 @@ if(BUILD_SHADER_TARGET)
     endif()
 
     if(NOT EXISTS "${SRC_DIR}/bgfx_shader.sh")
-        message(FATAL_ERROR "Could not locate file: bgfx_shader.sh")
+        message(FATAL_ERROR "Could not locate file: bgfx_shader.sh, expected in '${COMMON_DIR}'")
     elseif(NOT EXISTS "${COMMON_DIR}/shaderlib.sh")
-        message(FATAL_ERROR "Could not locate file: shaderlib.sh")
+        message(FATAL_ERROR "Could not locate file: shaderlib.sh, expected in '${COMMON_DIR}'")
     elseif(NOT EXISTS "${SHADERC_FILE}")
-        message(FATAL_ERROR "Could not locate file: shaderc(.exe)")
+        message(FATAL_ERROR "Could not locate file: shaderc(.exe), expected at '${SHADERC_FILE}'")
     endif()
 
     # Compiles the shader source file into a single platform.

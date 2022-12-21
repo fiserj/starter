@@ -36,6 +36,9 @@ jobs:
           }
 
     steps:
+    - name: Info
+      run: cmake --version
+
     - name: Checkout
       uses: actions/checkout@v2
 
