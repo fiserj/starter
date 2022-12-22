@@ -179,7 +179,7 @@ else()
 
         add_dependencies(${TARGET} "${NAME}")
 
-        add_dependencies("${NAME}" bgfx shaderc)
+        add_dependencies("${NAME}" shaderc)
     endfunction()
 
     set(SHADER_TARGET_SCRIPT "${CMAKE_CURRENT_LIST_FILE}")
