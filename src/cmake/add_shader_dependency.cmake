@@ -163,7 +163,7 @@ else()
         add_custom_target("${NAME}"
             COMMAND ${CMAKE_COMMAND}
                 -D "BUILD_SHADER_TARGET=1"
-                -D "BGFX_DIR=\"${FETCHCONTENT_BASE_DIR}/bgfx-src\"" # TODO : Hacky, ideally we want directly ${bgfx_SOURCE_DIR}.
+                -D "BGFX_DIR=\"${bgfx_SOURCE_DIR}\""
                 -D "TOOLS_DIR=\"${CMAKE_SOURCE_DIR}/tools\""
                 -D "SHADER=${SHADER}"
                 -D "VARYING=${VARYING}"
