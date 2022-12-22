@@ -23,7 +23,7 @@ if(BUILD_SHADER_TARGET)
     # expected locations.
     set(SRC_DIR      "${BGFX_DIR}/src")
     set(COMMON_DIR   "${BGFX_DIR}/examples/common")
-    set(SHADERC_FILE "${CMAKE_CURRENT_LIST_DIR}/../../tools/shaderc/${SHADERC_PLATFORM}/shaderc")
+    set(SHADERC_FILE "${TOOLS_DIR}/shaderc/${SHADERC_PLATFORM}/shaderc")
 
     if(WIN32)
         set(SHADERC_FILE "${SHADERC_FILE}.exe")
@@ -164,6 +164,7 @@ else()
             COMMAND ${CMAKE_COMMAND}
                 -D "BUILD_SHADER_TARGET=1"
                 -D "BGFX_DIR=\"${FETCHCONTENT_BASE_DIR}/bgfx-src\"" # TODO : Hacky, ideally we want directly ${bgfx_SOURCE_DIR}.
+                -D "TOOLS_DIR=\"${CMAKE_SOURCE_DIR}/tools\""
                 -D "SHADER=${SHADER}"
                 -D "VARYING=${VARYING}"
                 -D "RELDIR=\"${RELDIR}\""
