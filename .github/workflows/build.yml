@@ -36,11 +36,26 @@ jobs:
           }
 
     steps:
+    - name: Info
+      run: |
+        cmake --version
+        cmake --help
+
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Environment Variables
+      uses: iamtheyammer/branch-env-vars@v1.2.1
+      with:
+        WITH_EXTRA_LIBS: |
+          !pr>main:ON
+          !default:OFF
+        WITH_PREBUILT_SHADERC: |
+          !pr>main:OFF
+          !default:ON
+
     - name: Configure
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_CATCH2=ON -DWITH_FMT=ON -DWITH_GLEQ=ON -DWITH_IMGUI=ON -DWITH_MESHOPT=ON -DWITH_STB=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_CATCH2=${{env.WITH_EXTRA_LIBS}} -DWITH_FMT=${{env.WITH_EXTRA_LIBS}} -DWITH_GLEQ=${{env.WITH_EXTRA_LIBS}} -DWITH_IMGUI=${{env.WITH_EXTRA_LIBS}} -DWITH_MESHOPT=${{env.WITH_EXTRA_LIBS}} -DWITH_STB=${{env.WITH_EXTRA_LIBS}} -DWITH_PREBUILT_SHADERC=${{env.WITH_PREBUILT_SHADERC}}
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

@@ -23,18 +23,18 @@ if(BUILD_SHADER_TARGET)
     # expected locations.
     set(SRC_DIR      "${BGFX_DIR}/src")
     set(COMMON_DIR   "${BGFX_DIR}/examples/common")
-    set(SHADERC_FILE "${CMAKE_CURRENT_LIST_DIR}/../../tools/shaderc/${SHADERC_PLATFORM}/shaderc")
+    set(SHADERC_FILE "${TOOLS_DIR}/shaderc/${SHADERC_PLATFORM}/shaderc")
 
     if(WIN32)
         set(SHADERC_FILE "${SHADERC_FILE}.exe")
     endif()
 
     if(NOT EXISTS "${SRC_DIR}/bgfx_shader.sh")
-        message(FATAL_ERROR "Could not locate file: bgfx_shader.sh")
+        message(FATAL_ERROR "Could not locate file: bgfx_shader.sh, expected in '${COMMON_DIR}'")
     elseif(NOT EXISTS "${COMMON_DIR}/shaderlib.sh")
-        message(FATAL_ERROR "Could not locate file: shaderlib.sh")
+        message(FATAL_ERROR "Could not locate file: shaderlib.sh, expected in '${COMMON_DIR}'")
     elseif(NOT EXISTS "${SHADERC_FILE}")
-        message(FATAL_ERROR "Could not locate file: shaderc(.exe)")
+        message(FATAL_ERROR "Could not locate file: shaderc(.exe), expected at '${SHADERC_FILE}'")
     endif()
 
     # Compiles the shader source file into a single platform.
@@ -163,7 +163,8 @@ else()
         add_custom_target("${NAME}"
             COMMAND ${CMAKE_COMMAND}
                 -D "BUILD_SHADER_TARGET=1"
-                -D "BGFX_DIR=\"${FETCHCONTENT_BASE_DIR}/bgfx-src\"" # TODO : Hacky, ideally we want directly ${bgfx_SOURCE_DIR}.
+                -D "BGFX_DIR=\"${bgfx_SOURCE_DIR}\""
+                -D "TOOLS_DIR=\"${CMAKE_SOURCE_DIR}/tools\""
                 -D "SHADER=${SHADER}"
                 -D "VARYING=${VARYING}"
                 -D "RELDIR=\"${RELDIR}\""
@@ -178,7 +179,7 @@ else()
 
         add_dependencies(${TARGET} "${NAME}")
 
-        add_dependencies("${NAME}" bgfx)
+        add_dependencies("${NAME}" shaderc)
     endfunction()
 
     set(SHADER_TARGET_SCRIPT "${CMAKE_CURRENT_LIST_FILE}")

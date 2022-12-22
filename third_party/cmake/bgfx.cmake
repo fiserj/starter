@@ -71,3 +71,5 @@ set_target_properties(bgfx PROPERTIES
 )
 
 add_dependencies(bgfx shaderc)
+
+set(bgfx_SOURCE_DIR "${bgfx_SOURCE_DIR}" PARENT_SCOPE)
