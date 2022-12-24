@@ -4,8 +4,14 @@
 
 #include <bgfx/bgfx.h> // copy, createShader
 
-#define main static main
-#include <shaderc.cpp>
+#include <shaderc.h>   // Options
+
+namespace bgfx
+{
+
+bool compileShader(const char*, const char*, char*, uint32_t, Options&, bx::WriterI*);
+
+} // namespace bgfx
 
 namespace shaderc
 {

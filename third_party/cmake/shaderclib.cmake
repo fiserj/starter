@@ -697,6 +697,7 @@ function(create_shaderc_target AS_EXECUTABLE)
         ${bgfx_SOURCE_DIR}/src/shader_dxbc.cpp
         ${bgfx_SOURCE_DIR}/src/shader_spirv.cpp
         ${bgfx_SOURCE_DIR}/src/vertexlayout.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc.cpp
         ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_glsl.cpp
         ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_hlsl.cpp
         ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_metal.cpp
@@ -705,30 +706,46 @@ function(create_shaderc_target AS_EXECUTABLE)
     )
 
     if(${AS_EXECUTABLE})
-        list(APPEND SHADERC_SOURCES
-            ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc.cpp
-        )
-
         set(TARGET shaderc)
 
         add_executable(${TARGET} ${SHADERC_SOURCES})
     else()
+        set(TARGET shaderclib)
+
         list(APPEND SHADERC_SOURCES
             src/shaderclib.cpp
         )
 
-        set(TARGET shaderclib)
-
         add_library(${TARGET} STATIC ${SHADERC_SOURCES})
 
         target_link_libraries(${TARGET} PRIVATE bgfx)
+
+        target_compile_definitions(${TARGET}
+            PUBLIC
+                WITH_SHADERC_LIBRARY
+            PRIVATE
+                fatal=fatal_shaderc
+                g_allocator=g_allocator_shaderc
+                getUniformTypeName=getUniformTypeName_shaderc
+                main=main_shaderc
+                nameToUniformTypeEnum=nameToUniformTypeEnum_shaderc
+                s_uniformTypeName=s_uniformTypeName_shaderc
+                TinyStlAllocator=TinyStlAllocator_shaderc
+                trace=trace_shaderc
+        )
+
+        target_include_directories(${TARGET}
+            PUBLIC
+                src
+            PRIVATE
+                ${bgfx_SOURCE_DIR}/tools/shaderc
+        )
     endif()
 
     target_include_directories(${TARGET} PRIVATE
         ${bgfx_SOURCE_DIR}/3rdparty/webgpu/include
         ${bgfx_SOURCE_DIR}/3rdparty/dxsdk/include
         ${bgfx_SOURCE_DIR}/include
-        ${bgfx_SOURCE_DIR}/tools/shaderc
     )
 
     target_link_libraries(${TARGET} PRIVATE
