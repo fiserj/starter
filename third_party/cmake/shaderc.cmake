@@ -51,6 +51,8 @@ if(PREBUILT_SHADERC_AVAILABLE)
     add_custom_target(shaderc
         DEPENDS ${SHADERC_TOOL_OUTPUT_BINARY}
     )
-else()
+endif()
+
+if(NOT PREBUILT_SHADERC_AVAILABLE OR WITH_SHADERC_LIBRARY)
     include(cmake/shaderclib.cmake)
 endif()

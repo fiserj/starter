@@ -690,76 +690,106 @@ set_target_properties(fcpp PROPERTIES
 # SHADERC EXECUTABLE
 # ------------------------------------------------------------------------------
 
-add_executable(shaderc
-    ${bgfx_SOURCE_DIR}/src/shader.cpp
-    ${bgfx_SOURCE_DIR}/src/shader_dx9bc.cpp
-    ${bgfx_SOURCE_DIR}/src/shader_dxbc.cpp
-    ${bgfx_SOURCE_DIR}/src/shader_spirv.cpp
-    ${bgfx_SOURCE_DIR}/src/vertexlayout.cpp
-    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc.cpp
-    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_glsl.cpp
-    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_hlsl.cpp
-    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_metal.cpp
-    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_pssl.cpp
-    ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_spirv.cpp
-)
-
-target_include_directories(shaderc PRIVATE
-    ${bgfx_SOURCE_DIR}/3rdparty/webgpu/include
-    ${bgfx_SOURCE_DIR}/3rdparty/dxsdk/include
-    ${bgfx_SOURCE_DIR}/include
-)
-
-target_link_libraries(shaderc PRIVATE
-    bimg
-    bx
-    fcpp
-    glsl_optimizer
-    glslang
-    spirv_cross
-    spirv_opt
-)
-
-if(WIN32)
-    target_link_libraries(shaderc PRIVATE
-        Psapi.lib
+function(create_shaderc_target AS_EXECUTABLE)
+    set(SHADERC_SOURCES
+        ${bgfx_SOURCE_DIR}/src/shader.cpp
+        ${bgfx_SOURCE_DIR}/src/shader_dx9bc.cpp
+        ${bgfx_SOURCE_DIR}/src/shader_dxbc.cpp
+        ${bgfx_SOURCE_DIR}/src/shader_spirv.cpp
+        ${bgfx_SOURCE_DIR}/src/vertexlayout.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_glsl.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_hlsl.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_metal.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_pssl.cpp
+        ${bgfx_SOURCE_DIR}/tools/shaderc/shaderc_spirv.cpp
     )
-endif()
 
-if(APPLE)
-    target_link_libraries(shaderc PRIVATE
-        "-framework Cocoa"
+    if(${AS_EXECUTABLE})
+        set(TARGET shaderc)
+        add_executable(${TARGET} ${SHADERC_SOURCES})
+    else()
+        set(TARGET shaderclib)
+        add_library(${TARGET} STATIC ${SHADERC_SOURCES})
+    endif()
+
+    target_include_directories(${TARGET} PRIVATE
+        ${bgfx_SOURCE_DIR}/3rdparty/webgpu/include
+        ${bgfx_SOURCE_DIR}/3rdparty/dxsdk/include
+        ${bgfx_SOURCE_DIR}/include
     )
-endif()
 
-if(APPLE OR LINUX)
-    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-
-    find_package(Threads REQUIRED)
-
-    target_link_libraries(shaderc PRIVATE
-        Threads::Threads
+    target_link_libraries(${TARGET} PRIVATE
+        bimg
+        bx
+        fcpp
+        glsl_optimizer
+        glslang
+        spirv_cross
+        spirv_opt
     )
-endif()
 
-set_target_properties(shaderc PROPERTIES
-    CXX_STANDARD 20
-    CXX_EXTENSIONS OFF
-    CXX_STANDARD_REQUIRED ON
-    FOLDER "shaderc"
-)
+    if(WIN32)
+        target_link_libraries(${TARGET} PRIVATE
+            Psapi.lib
+        )
+    endif()
 
-if(APPLE)
-    set(SHADERC_PLATFORM osx)
-elseif(WIN32)
-    set(SHADERC_PLATFORM windows)
-else()
-    message(FATAL_ERROR "Unsupported platform.")
-endif()
+    if(APPLE)
+        target_link_libraries(${TARGET} PRIVATE
+            "-framework Cocoa"
+        )
+    endif()
 
-add_custom_command(
-    TARGET shaderc
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:shaderc> "${CMAKE_SOURCE_DIR}/tools/shaderc/${SHADERC_PLATFORM}/$<TARGET_FILE_NAME:shaderc>"
-)
+    if(APPLE OR LINUX)
+        set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+        set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+
+        find_package(Threads REQUIRED)
+
+        target_link_libraries(${TARGET} PRIVATE
+            Threads::Threads
+        )
+    endif()
+
+    set_target_properties(${TARGET} PROPERTIES
+        CXX_STANDARD 20
+        CXX_EXTENSIONS OFF
+        CXX_STANDARD_REQUIRED ON
+        FOLDER "shaderc"
+    )
+
+    if(APPLE)
+        set(SHADERC_PLATFORM osx)
+    elseif(WIN32)
+        set(SHADERC_PLATFORM windows)
+    else()
+        message(FATAL_ERROR "Unsupported platform.")
+    endif()
+
+    if(${AS_EXECUTABLE})
+        add_custom_command(
+            TARGET shaderc
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:shaderc> "${CMAKE_SOURCE_DIR}/tools/shaderc/${SHADERC_PLATFORM}/$<TARGET_FILE_NAME:shaderc>"
+        )
+    endif()
+endfunction() # create_shaderc_target
+
+
+# ------------------------------------------------------------------------------
+# SHADERC EXECUTABLE
+# ------------------------------------------------------------------------------
+
+if(NOT PREBUILT_SHADERC_AVAILABLE)
+    create_shaderc_target(TRUE)
+endif() # NOT PREBUILT_SHADERC_AVAILABLE
+
+
+# ------------------------------------------------------------------------------
+# SHADERC LIBRARY
+# ------------------------------------------------------------------------------
+
+if(WITH_SHADERC_LIBRARY)
+    create_shaderc_target(FALSE)
+endif() # WITH_SHADERC_LIBRARY
