@@ -716,7 +716,12 @@ function(create_shaderc_target AS_EXECUTABLE)
         set(BGFX_SHADER_STR_FILE ${BGFX_SHADER_STR_DIR}/bgfx_shader_str.h)
         if(NOT EXISTS "${BGFX_SHADER_STR_FILE}")
             set(VAR_NAME "s_bgfx_shader_str")
+
             file(READ ${bgfx_SOURCE_DIR}/src/bgfx_shader.sh VAR_CONTENT)
+            string(APPEND VAR_CONTENT "\"")
+            string(PREPEND VAR_CONTENT "\"")
+            string(REPLACE "\n" "\\n\"\n\"" VAR_CONTENT ${VAR_CONTENT})
+
             configure_file(src/file_to_string.h.in ${BGFX_SHADER_STR_FILE})
         endif()
 
