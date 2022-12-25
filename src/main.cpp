@@ -169,6 +169,7 @@ static int run(int, char**)
     const char* vs_src =
         "$input  a_position, a_color0\n"
         "$output v_color0\n"
+        "#include <bgfx_shader.sh>\n"
         "void main()\n"
         "{\n"
         "    gl_Position = mul(u_modelViewProj, vec4(a_position, 1.0));\n"
@@ -176,6 +177,7 @@ static int run(int, char**)
         "}";
     const char* fs_src =
         "$input v_color0\n"
+        "#include <bgfx_shader.sh>\n"
         "void main()\n"
         "{\n"
         "    gl_FragColor = v_color0;\n"

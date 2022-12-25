@@ -1,5 +1,6 @@
 #include "shaderclib.h"
 
+#include <string>
 #include <vector>            // vector
 
 #include <bgfx/bgfx.h>       // copy, createShader
@@ -53,20 +54,27 @@ bgfx::ShaderHandle compile_from_memory
 #   error Unsupported platform.
 #endif
 
-    constexpr size_t pad = 16384;
-    const size_t size = bx::strLen(source);
+    std::string patched = source;
+    patched += '\n';
 
-    char* data = new char[size + pad + 1];
-    bx::memCopy(data, source, size);
-    data[size] = '\n';
-    bx::memSet(&data[size + 1], 0, pad);
+    const std::string search = "#include <bgfx_shader.sh>";
+    const size_t      index  = patched.find(search);
+    if (index != std::string::npos)
+    {
+        patched.replace(index, search.length(), s_bgfx_shader_str);
+    }
+
+    constexpr size_t pad = 16384;
+    char* data = new char[patched.length() + pad];
+    bx::memCopy(data, patched.c_str(), patched.length());
+    bx::memSet(&data[patched.length()], 0, pad);
 
     BufferWriter writer;
     if (!bgfx::compileShader(
         varying,
         "",
         data,
-        size,
+        patched.length() - 1,
         options,
         &writer
     ))
