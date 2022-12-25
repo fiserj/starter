@@ -183,7 +183,7 @@ static int run(int, char**)
     const char* varying_src =
         "vec4 v_color0   : COLOR0 = vec4(1.0, 0.0, 0.0, 1.0);\n"
         "vec4 a_color0   : COLOR0;\n"
-        "vec3 a_position : POSITION;\n";
+        "vec3 a_position : POSITION;";
 
     vs = shaderc::compile_from_memory(shaderc::ShaderType::VERTEX  , vs_src, varying_src);
     fs = shaderc::compile_from_memory(shaderc::ShaderType::FRAGMENT, fs_src, varying_src);

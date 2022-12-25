@@ -38,13 +38,15 @@ bgfx::ShaderHandle compile_from_memory
 )
 {
     bgfx::Options options;
-    options.shaderType = "cfv"[int(type)];
+    options.shaderType     = "cfv"[int(type)];
+    options.inputFilePath  = "<in_memory>";
+    options.outputFilePath = "";
 #if BX_PLATFORM_OSX
     options.platform = "osx";
-    options.profile = "metal";
+    options.profile  = "metal";
 #elif BX_PLATFORM_WINDOWS
     options.platform = "windows";
-    options.profile = "s_5_0";
+    options.profile  = "cpv"[int(type)] + std::string("s_5_0");
 #else
 #   error Unsupported platform.
 #endif
@@ -54,7 +56,8 @@ bgfx::ShaderHandle compile_from_memory
 
     char* data = new char[size + pad + 1];
     bx::memCopy(data, source, size);
-    bx::memSet(&data[size], 0, pad + 1);
+    data[size] = '\n';
+    bx::memSet(&data[size + 1], 0, pad);
 
     BufferWriter writer;
     if (!bgfx::compileShader(
