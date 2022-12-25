@@ -1,10 +1,12 @@
 #include "shaderclib.h"
 
-#include <vector>      // vector
+#include <vector>            // vector
 
-#include <bgfx/bgfx.h> // copy, createShader
+#include <bgfx/bgfx.h>       // copy, createShader
 
-#include <shaderc.h>   // Options
+#include <shaderc.h>         // Options
+
+#include <bgfx_shader_str.h> // s_bgfx_shader_str
 
 namespace bgfx
 {

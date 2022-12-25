@@ -712,6 +712,14 @@ function(create_shaderc_target AS_EXECUTABLE)
     else()
         set(TARGET shaderclib)
 
+        set(BGFX_SHADER_STR_DIR ${CMAKE_BINARY_DIR}/bgfx_shader_str)
+        set(BGFX_SHADER_STR_FILE ${BGFX_SHADER_STR_DIR}/bgfx_shader_str.h)
+        if(NOT EXISTS "${BGFX_SHADER_STR_FILE}")
+            set(VAR_NAME "s_bgfx_shader_str")
+            file(READ ${bgfx_SOURCE_DIR}/src/bgfx_shader.sh VAR_CONTENT)
+            configure_file(src/file_to_string.h.in ${BGFX_SHADER_STR_FILE})
+        endif()
+
         list(APPEND SHADERC_SOURCES
             src/shaderclib.cpp
         )
@@ -738,6 +746,7 @@ function(create_shaderc_target AS_EXECUTABLE)
             PUBLIC
                 src
             PRIVATE
+                ${BGFX_SHADER_STR_DIR}
                 ${bgfx_SOURCE_DIR}/tools/shaderc
         )
     endif()
