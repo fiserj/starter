@@ -110,7 +110,7 @@ set_target_properties(
     glfw
     update_mappings
     PROPERTIES
-    FOLDER "Third Party/GLFW"
+    FOLDER "Third Party/GLFW3"
 )
 
 
