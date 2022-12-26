@@ -253,7 +253,7 @@ set_target_properties(spirv_opt PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
-    FOLDER "shaderc"
+    FOLDER "Third Party/shaderc"
 )
 
 
@@ -314,7 +314,7 @@ set_target_properties(spirv_cross PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
-    FOLDER "shaderc"
+    FOLDER "Third Party/shaderc"
 )
 
 
@@ -460,7 +460,7 @@ set_target_properties(glslang PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
-    FOLDER "shaderc"
+    FOLDER "Third Party/shaderc"
 )
 
 
@@ -638,7 +638,7 @@ set_target_properties(glsl_optimizer PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
-    FOLDER "shaderc"
+    FOLDER "Third Party/shaderc"
 )
 
 
@@ -682,7 +682,7 @@ set_target_properties(fcpp PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
-    FOLDER "shaderc"
+    FOLDER "Third Party/shaderc"
 )
 
 
@@ -800,7 +800,7 @@ function(create_shaderc_target AS_EXECUTABLE)
         CXX_STANDARD 20
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
-        FOLDER "shaderc"
+        FOLDER "Third Party/shaderc"
     )
 
     if(APPLE)

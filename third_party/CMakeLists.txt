@@ -106,6 +106,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw)
 
+set_target_properties(
+    glfw
+    update_mappings
+    PROPERTIES
+    FOLDER "Third Party/GLFW"
+)
+
 
 # ------------------------------------------------------------------------------
 # DEAR IMGUI
