@@ -55,7 +55,7 @@ jobs:
           !default:ON
 
     - name: Configure
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_CATCH2=${{env.WITH_EXTRA_LIBS}} -DWITH_FMT=${{env.WITH_EXTRA_LIBS}} -DWITH_GLEQ=${{env.WITH_EXTRA_LIBS}} -DWITH_IMGUI=${{env.WITH_EXTRA_LIBS}} -DWITH_MESHOPT=${{env.WITH_EXTRA_LIBS}} -DWITH_STB=${{env.WITH_EXTRA_LIBS}} -DWITH_PREBUILT_SHADERC=${{env.WITH_PREBUILT_SHADERC}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_CATCH2=${{env.WITH_EXTRA_LIBS}} -DWITH_FMT=${{env.WITH_EXTRA_LIBS}} -DWITH_GLEQ=${{env.WITH_EXTRA_LIBS}} -DWITH_IMGUI=${{env.WITH_EXTRA_LIBS}} -DWITH_MESHOPT=${{env.WITH_EXTRA_LIBS}} -DWITH_STB=${{env.WITH_EXTRA_LIBS}} -DWITH_PREBUILT_SHADERC=${{env.WITH_PREBUILT_SHADERC}} -DWITH_SHADERC_LIBRARY=${{env.WITH_EXTRA_LIBS}}
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

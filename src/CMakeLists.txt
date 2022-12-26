@@ -34,6 +34,10 @@ if(WITH_STB)
     list(APPEND LIBRARY_LIST stb)
 endif()
 
+if(WITH_SHADERC_LIBRARY)
+    list(APPEND LIBRARY_LIST shaderclib)
+endif()
+
 add_executable(${NAME}
     ${SOURCE_LIST}
 )

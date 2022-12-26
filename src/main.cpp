@@ -20,19 +20,23 @@
 #   define GLFW_EXPOSE_NATIVE_WIN32
 #   define GLFW_EXPOSE_NATIVE_WGL
 #endif
-#include <GLFW/glfw3native.h>          // glfwGetX11Display, glfwGet*Window
+#include <GLFW/glfw3native.h>             // glfwGetX11Display, glfwGet*Window
 
 #ifdef WITH_IMGUI
-#   include "imgui.h"                  // imgui_*, ImGui::*
+#   include "imgui.h"                     // imgui_*, ImGui::*
 #endif
 
 #if BX_PLATFORM_OSX
-#   import <Cocoa/Cocoa.h>             // NSWindow
-#   import <QuartzCore/CAMetalLayer.h> // CAMetalLayer
+#   import <Cocoa/Cocoa.h>                // NSWindow
+#   import <QuartzCore/CAMetalLayer.h>    // CAMetalLayer
 #endif
 
-#include <shaders/position_color_fs.h> // position_color_fs_*
-#include <shaders/position_color_vs.h> // position_color_vs_
+#ifdef WITH_SHADERC_LIBRARY
+#   include <shaderclib.h>                // compile_from_memory
+#else
+#   include <shaders/position_color_fs.h> // position_color_fs_*
+#   include <shaders/position_color_vs.h> // position_color_vs_
+#endif
 
 
 // -----------------------------------------------------------------------------
@@ -158,6 +162,34 @@ static int run(int, char**)
     bgfx::setDebug(BGFX_DEBUG_STATS);
 
     // Graphics resources' creation --------------------------------------------
+    bgfx::ShaderHandle vs = BGFX_INVALID_HANDLE;
+    bgfx::ShaderHandle fs = BGFX_INVALID_HANDLE;
+
+#ifdef WITH_SHADERC_LIBRARY
+    const char* vs_src =
+        "$input  a_position, a_color0\n"
+        "$output v_color0\n"
+        "#include <bgfx_shader.sh>\n"
+        "void main()\n"
+        "{\n"
+        "    gl_Position = mul(u_modelViewProj, vec4(a_position, 1.0));\n"
+        "    v_color0    = a_color0;\n"
+        "}";
+    const char* fs_src =
+        "$input v_color0\n"
+        "#include <bgfx_shader.sh>\n"
+        "void main()\n"
+        "{\n"
+        "    gl_FragColor = v_color0;\n"
+        "}";
+    const char* varying_src =
+        "vec4 v_color0   : COLOR0 = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        "vec4 a_color0   : COLOR0;\n"
+        "vec3 a_position : POSITION;";
+
+    vs = shaderc::compile_from_memory(shaderc::ShaderType::VERTEX  , vs_src, varying_src);
+    fs = shaderc::compile_from_memory(shaderc::ShaderType::FRAGMENT, fs_src, varying_src);
+#else
     const bgfx::EmbeddedShader shaders[] =
     {
         BGFX_EMBEDDED_SHADER(position_color_fs),
@@ -166,11 +198,11 @@ static int run(int, char**)
         BGFX_EMBEDDED_SHADER_END()
     };
 
-    const bgfx::ProgramHandle program = bgfx::createProgram(
-        bgfx::createEmbeddedShader(shaders, bgfx::getRendererType(), "position_color_vs"),
-        bgfx::createEmbeddedShader(shaders, bgfx::getRendererType(), "position_color_fs"),
-        true
-    );
+    vs = bgfx::createEmbeddedShader(shaders, bgfx::getRendererType(), "position_color_vs");
+    fs = bgfx::createEmbeddedShader(shaders, bgfx::getRendererType(), "position_color_fs");
+#endif
+
+    const bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
     defer(bgfx::destroy(program));
 
     bgfx::VertexLayout vertex_layout;
