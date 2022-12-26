@@ -26,6 +26,10 @@ if(WITH_IMGUI)
     list(APPEND LIBRARY_LIST imgui)
 endif()
 
+if(WITH_LUAU)
+    list(APPEND LIBRARY_LIST Luau.CodeGen Luau.Compiler Luau.VM)
+endif()
+
 if(WITH_MESHOPT)
     list(APPEND LIBRARY_LIST meshoptimizer)
 endif()

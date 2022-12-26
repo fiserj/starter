@@ -142,6 +142,36 @@ endif()
 
 
 # ------------------------------------------------------------------------------
+# LUAU
+# ------------------------------------------------------------------------------
+
+TURN_OFF(LUAU_BUILD_CLI)
+TURN_OFF(LUAU_BUILD_TESTS)
+
+if(WITH_LUAU)
+    FetchContent_Declare(
+        Luau
+        GIT_REPOSITORY https://github.com/Roblox/luau.git
+        GIT_TAG        0.556
+    )
+
+    FetchContent_MakeAvailable(Luau)
+
+    set_target_properties(
+        isocline
+        Luau.Analysis
+        Luau.Ast
+        Luau.CodeGen
+        Luau.Common
+        Luau.Compiler
+        Luau.VM
+        PROPERTIES
+        FOLDER "third_party/Luau"
+    )
+endif()
+
+
+# ------------------------------------------------------------------------------
 # MESHOPTIMIZER
 # ------------------------------------------------------------------------------
 
