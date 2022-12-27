@@ -8,7 +8,7 @@ set(BIMG_SOURCE_FILES
 # MSVC does not optimize-out the compile-time disabled (via BIMG_DECODE_ENABLE = 0)
 # parts, so we have to provide fake implementation to remove the linker errors.
 if(MSVC)
-    list(APPEND BIMG_SOURCE_FILES "cmake/bimg_patch.cpp")
+    list(APPEND BIMG_SOURCE_FILES src/bimg_patch.cpp)
 endif()
 
 add_library(bimg STATIC
@@ -34,4 +34,5 @@ set_target_properties(bimg PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
+    FOLDER "Third Party"
 )
